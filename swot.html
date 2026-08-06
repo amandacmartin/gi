@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio Estratégico | Papel & Arte</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --primary-color: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --secondary-color: #06b6d4;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --font-family: 'Outfit', sans-serif;
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Utilidades de Acessibilidade */
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
+        }
+        :focus {
+            outline: 3px solid var(--secondary-color);
+            outline-offset: 3px;
+        }
+
+        /* Layout Base */
+        header {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+        .logo i { color: var(--primary-color); }
+
+        .btn-mode {
+            background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted);
+            padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 600;
+            transition: var(--transition);
+        }
+        .btn-mode:hover { border-color: var(--text-main); color: var(--text-main); }
+
+        main { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+
+        .screen { display: none; animation: fadeIn 0.5s ease; }
+        .screen.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Gamificação - Progress Bar */
+        .progress-container { width: 100%; background: var(--surface-color); border-radius: 10px; height: 10px; margin-bottom: 2rem; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); width: 0%; transition: width 0.4s ease; }
+
+        /* Cards e Containers */
+        .card { background: var(--surface-color); border-radius: 16px; padding: 2rem; border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.2); margin-bottom: 2rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        h1, h2, h3 { color: var(--text-main); margin-bottom: 1rem; }
+        h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Formulários */
+        .input-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-muted); }
+        input, textarea, select {
+            width: 100%; padding: 1rem; background: var(--bg-color); border: 2px solid var(--border-color);
+            border-radius: 12px; color: var(--text-main); font-family: inherit; transition: var(--transition);
+        }
+        input:focus, textarea:focus { border-color: var(--primary-color); outline: none; }
+        .input-hint { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; display: block; }
+        
+        .btn {
+            background: var(--primary-color); color: #fff; border: none; padding: 1rem 2rem; font-size: 1.1rem;
+            border-radius: 12px; cursor: pointer; font-weight: 600; font-family: inherit; transition: var(--transition);
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%;
+        }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-secondary { background: var(--surface-color); border: 2px solid var(--border-color); color: var(--text-main); }
+        .btn-secondary:hover { background: var(--border-color); }
+        .btn-success { background: var(--success-color); }
+
+        .btn-group-nav { display: flex; gap: 1rem; margin-top: 2rem; }
+        .btn-group-nav .btn { width: auto; flex: 1; }
+
+        /* SWOT Grid */
+        .swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .swot-box { padding: 1.5rem; border-radius: 12px; border: 2px solid; }
+        .swot-s { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+        .swot-w { border-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
+        .swot-o { border-color: #10b981; background: rgba(16, 185, 129, 0.05); }
+        .swot-t { border-color: #f59e0b; background: rgba(245, 158, 11, 0.05); }
+        .swot-box h3 { display: flex; align-items: center; gap: 0.5rem; }
+        .swot-input-list input { margin-bottom: 0.5rem; }
+
+        /* Dicas Gamificadas */
+        .btn-hint {
+            background: rgba(6, 182, 212, 0.1); color: var(--secondary-color); border: 1px solid var(--secondary-color);
+            padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: var(--transition);
+        }
+        .btn-hint:hover { background: var(--secondary-color); color: #fff; }
+        .hint-content {
+            display: none; background: rgba(6, 182, 212, 0.1); border-left: 4px solid var(--secondary-color);
+            padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; font-size: 0.95rem; animation: fadeIn 0.3s;
+        }
+
+        /* Lista de Membros */
+        .member-tag {
+            display: inline-flex; align-items: center; gap: 0.5rem; background: var(--primary-color);
+            padding: 0.5rem 1rem; border-radius: 20px; margin: 0.5rem 0.5rem 0 0; font-size: 0.9rem;
+        }
+        .member-tag button { background: none; border: none; color: #fff; cursor: pointer; }
+
+        /* Painel do Professor */
+        .dashboard-controls { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .dashboard-controls input { flex: 1; min-width: 200px; }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--surface-color); color: var(--text-muted); font-weight: 600; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+        .action-btns { display: flex; gap: 0.5rem; }
+        .btn-icon { background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.5rem; border-radius: 8px; cursor: pointer; transition: var(--transition); }
+        .btn-icon:hover { background: var(--primary-color); border-color: var(--primary-color); }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .swot-grid { grid-template-columns: 1fr; }
+            .btn-group-nav { flex-direction: column; }
+            header { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-gamepad"></i> GeoEstratégia
+        </div>
+        <button id="toggle-mode-btn" class="btn-mode">
+            <i class="fa-solid fa-chalkboard-user"></i> Acesso Professor
+        </button>
+    </header>
+
+    <main>
+        <section id="screen-home" class="screen active">
+            <div class="card" style="text-align: center; max-width: 600px; margin: 0 auto;">
+                <h1>🚀 Desafio de Estratégia</h1>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                    Preparem-se para analisar, debater e decidir o futuro de uma organização real.
+                </p>
+                
+                <div style="text-align: left;">
+                    <div class="input-group">
+                        <label for="member-name">Adicionar integrante da equipe:</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="member-name" placeholder="Digite o nome completo do aluno...">
+                            <button id="btn-add-member" class="btn" style="width: auto;"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <div id="members-list" style="min-height: 50px; margin-bottom: 2rem;"></div>
+                </div>
+
+                <button id="btn-start-game" class="btn" disabled>
+                    Iniciar Desafio <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <section id="screen-student" class="screen">
+            <div class="progress-container" aria-label="Progresso da atividade">
+                <div id="student-progress" class="progress-bar"></div>
+            </div>
+
+            <div id="step-1" class="step-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📖 O Estudo de Caso: <span id="case-title-display">Papel & Arte</span></h2>
+                        <button class="btn-hint" onclick="toggleHint('hint-case')"><i class="fa-solid fa-lightbulb"></i> Dica</button>
+                    </div>
+                    <div id="hint-case" class="hint-content">
+                        <strong>Dica de Análise:</strong> Leia atentamente buscando identificar o que a empresa faz bem, onde ela falha, as mudanças no mercado e os riscos externos. Sublinhe mentalmente esses pontos!
+                    </div>
+                    <div id="case-description-display" style="white-space: pre-wrap; margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-color); border-radius: 12px; border-left: 4px solid var(--primary-color);">
+                        </div>
+                    <div class="btn-group-nav" style="justify-content: flex-end;">
+                        <button class="btn btn-next" data-next="2">Avançar para Matriz SWOT <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step-2" class="step-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>🎯 Matriz SWOT</h2>
+                        <button class="btn-hint" onclick="toggleHint('hint-swot')"><i class="fa-solid fa-lightbulb"></i> Dica</button>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; color: var(--text-muted);">
+                        Preencha os quadrantes com base no caso lido. <strong>É obrigatório inserir pelo menos DUAS respostas em cada categoria.</strong>
+                    </p>
+                    <div id="hint-swot" class="hint-content">
+                        <strong>Forças/Fraquezas:</strong> Olhe para dentro da empresa (recursos, equipe, processos).<br>
+                        <strong>Oportunidades/Ameaças:</strong> Olhe para fora (concorrentes, mercado, leis, tendências).
+                    </div>
+
+                    <form id="form-swot">
+                        <div class="swot-grid">
+                            <div class="swot-box swot-s">
+                                <h3><i class="fa-solid fa-arrow-trend-up"></i> Forças (Strengths)</h3>
+                                <span class="input-hint">Fatores internos positivos</span>
+                                <div class="swot-input-list">
+                                    <input type="text" id="s1" required placeholder="1. Força obrigatória...">
+                                    <input type="text" id="s2" required placeholder="2. Força obrigatória...">
+                                    <input type="text" id="s3" placeholder="3. Força opcional...">
+                                </div>
+                            </div>
+                            <div class="swot-box swot-w">
+                                <h3><i class="fa-solid fa-arrow-trend-down"></i> Fraquezas (Weaknesses)</h3>
+                                <span class="input-hint">Fatores internos negativos</span>
+                                <div class="swot-input-list">
+                                    <input type="text" id="w1" required placeholder="1. Fraqueza obrigatória...">
+                                    <input type="text" id="w2" required placeholder="2. Fraqueza obrigatória...">
+                                    <input type="text" id="w3" placeholder="3. Fraqueza opcional...">
+                                </div>
+                            </div>
+                            <div class="swot-box swot-o">
+                                <h3><i class="fa-solid fa-sun"></i> Oportunidades (Opportunities)</h3>
+                                <span class="input-hint">Fatores externos positivos</span>
+                                <div class="swot-input-list">
+                                    <input type="text" id="o1" required placeholder="1. Oportunidade obrigatória...">
+                                    <input type="text" id="o2" required placeholder="2. Oportunidade obrigatória...">
+                                    <input type="text" id="o3" placeholder="3. Oportunidade opcional...">
+                                </div>
+                            </div>
+                            <div class="swot-box swot-t">
+                                <h3><i class="fa-solid fa-bolt"></i> Ameaças (Threats)</h3>
+                                <span class="input-hint">Fatores externos negativos</span>
+                                <div class="swot-input-list">
+                                    <input type="text" id="t1" required placeholder="1. Ameaça obrigatória...">
+                                    <input type="text" id="t2" required placeholder="2. Ameaça obrigatória...">
+                                    <input type="text" id="t3" placeholder="3. Ameaça opcional...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group-nav">
+                            <button type="button" class="btn btn-secondary btn-prev" data-prev="1"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                            <button type="submit" class="btn">Salvar e Avançar <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="step-3" class="step-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>💡 Ação Estratégica Prioritária</h2>
+                        <button class="btn-hint" onclick="toggleHint('hint-action')"><i class="fa-solid fa-lightbulb"></i> Dica</button>
+                    </div>
+                    <div id="hint-action" class="hint-content">
+                        Como você pode usar uma Força para aproveitar uma Oportunidade? Ou como resolver uma Fraqueza para evitar uma Ameaça? A estratégia nasce do cruzamento da SWOT!
+                    </div>
+                    <form id="form-action">
+                        <div class="input-group">
+                            <label for="strategic-action">Com base na matriz SWOT que vocês criaram, qual deve ser a PRIMEIRA ação estratégica da empresa e por quê?</label>
+                            <textarea id="strategic-action" rows="5" required placeholder="Descreva a ação detalhadamente, justificando a decisão..."></textarea>
+                        </div>
+                        <div class="btn-group-nav">
+                            <button type="button" class="btn btn-secondary btn-prev" data-prev="2"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                            <button type="submit" class="btn">Salvar e Avançar <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="step-4" class="step-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>🛡️ 5 Forças de Porter</h2>
+                        <button class="btn-hint" onclick="toggleHint('hint-porter')"><i class="fa-solid fa-lightbulb"></i> Dica</button>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; color: var(--text-muted);">
+                        Avalie o ambiente competitivo da empresa. Preencha todos os campos obrigatórios.
+                    </p>
+                    <div id="hint-porter" class="hint-content">
+                        Pense no poder de barganha: Se há muitos fornecedores, a empresa tem o poder. Se há poucos, o fornecedor dita as regras. O mesmo vale para clientes.
+                    </div>
+                    <form id="form-porter">
+                        <div class="input-group">
+                            <label>1. Rivalidade entre Concorrentes (Descreva o cenário)</label>
+                            <input type="text" id="p-riv" required placeholder="Ex: A concorrência é alta devido a...">
+                        </div>
+                        <div class="input-group">
+                            <label>2. Poder de Barganha dos Fornecedores</label>
+                            <input type="text" id="p-forn" required placeholder="Ex: Fornecedores têm muito poder porque...">
+                        </div>
+                        <div class="input-group">
+                            <label>3. Poder de Barganha dos Clientes</label>
+                            <input type="text" id="p-cli" required placeholder="Ex: Clientes exigem preços baixos pois...">
+                        </div>
+                        <div class="input-group">
+                            <label>4. Ameaça de Novos Entrantes</label>
+                            <input type="text" id="p-ent" required placeholder="Ex: É fácil abrir uma empresa nesse setor?">
+                        </div>
+                        <div class="input-group">
+                            <label>5. Ameaça de Produtos Substitutos</label>
+                            <input type="text" id="p-sub" required placeholder="Ex: Existe outra tecnologia/produto que substitui o serviço?">
+                        </div>
+                        
+                        <div class="btn-group-nav">
+                            <button type="button" class="btn btn-secondary btn-prev" data-prev="3"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                            <button type="submit" class="btn btn-success" id="btn-final-submit"><i class="fa-solid fa-check-double"></i> Concluir e Gerar Relatório PDF</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-success" class="screen">
+            <div class="card" style="text-align: center; padding: 4rem 2rem;">
+                <i class="fa-solid fa-trophy" style="font-size: 5rem; color: var(--success-color); margin-bottom: 1rem;"></i>
+                <h1>Missão Cumprida!</h1>
+                <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2rem;">A análise foi concluída com sucesso. Clique abaixo para gerar o arquivo final.</p>
+                
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button id="btn-download-pdf" class="btn" style="width: auto;"><i class="fa-solid fa-file-pdf"></i> Baixar Relatório Completo para Envio</button>
+                    <button id="btn-restart" class="btn btn-secondary" style="width: auto;"><i class="fa-solid fa-rotate-right"></i> Nova Análise</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-teacher-login" class="screen">
+            <div class="card" style="max-width: 400px; margin: 0 auto; text-align: center;">
+                <h2><i class="fa-solid fa-lock"></i> Área do Professor</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Acesso restrito para gestão de atividades.</p>
+                <div class="input-group">
+                    <input type="password" id="teacher-pin" placeholder="Senha do Professor">
+                </div>
+                <button id="btn-teacher-login" class="btn">Entrar</button>
+            </div>
+        </section>
+
+        <section id="screen-teacher-panel" class="screen">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <h1><i class="fa-solid fa-chart-line"></i> Dashboard do Professor</h1>
+                <div style="display: flex; gap: 1rem;">
+                    <button id="btn-edit-case" class="btn btn-secondary" style="width: auto;"><i class="fa-solid fa-pen-to-square"></i> Editar Estudo de Caso</button>
+                    <button id="btn-export-csv" class="btn btn-secondary" style="width: auto;"><i class="fa-solid fa-file-csv"></i> Exportar CSV</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="dashboard-controls">
+                    <input type="text" id="search-submissions" placeholder="🔍 Pesquisar por aluno ou equipe...">
+                    <button id="btn-refresh-data" class="btn" style="width: auto;"><i class="fa-solid fa-rotate"></i> Atualizar Dados</button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Equipe (Integrantes)</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissions-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-teacher-editor" class="screen">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-pen-nib"></i> Criar/Editar Desafio</h2>
+                    <div>
+                        <button id="btn-export-case" class="btn-icon" title="Exportar JSON"><i class="fa-solid fa-download"></i></button>
+                        <label for="import-case" class="btn-icon" title="Importar JSON" style="cursor:pointer; display:inline-block;"><i class="fa-solid fa-upload"></i></label>
+                        <input type="file" id="import-case" accept=".json" style="display: none;">
+                    </div>
+                </div>
+                <form id="form-edit-case">
+                    <div class="input-group">
+                        <label>Título da Empresa / Desafio</label>
+                        <input type="text" id="edit-case-title" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Texto do Estudo de Caso (Cenário, dados, desafios)</label>
+                        <textarea id="edit-case-desc" rows="10" required></textarea>
+                    </div>
+                    <div class="btn-group-nav">
+                        <button type="button" id="btn-cancel-edit" class="btn btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script type="module">
+        // ---------------------------------------------------------
+        // 1. CONFIGURAÇÃO DO FIREBASE (Modo Inteligente Não Bloqueante)
+        // ---------------------------------------------------------
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            projectId: "SEU_PROJETO",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "ID",
+            appId: "APP_ID"
+        };
+
+        let db = null;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            console.log("Firebase inicializado!");
+        } catch(e) {
+            console.warn("Firebase offline/não configurado. Operando localmente.");
+        }
+
+        // ---------------------------------------------------------
+        // 2. ESTADO E DADOS INICIAIS
+        // ---------------------------------------------------------
+        const defaultCaseStudy = {
+            title: "Papel & Arte - Indústria Gráfica",
+            description: "A 'Papel & Arte' é uma gráfica tradicional com 20 anos de mercado, reconhecida pela alta qualidade de impressão de livros e materiais corporativos. A empresa possui maquinário próprio já totalmente pago e uma equipe leal de operadores muito experientes.\n\nNo entanto, nos últimos 3 anos, o faturamento caiu 30%. A diretoria percebeu que o marketing digital e a produção de embalagens sustentáveis para e-commerce cresceram exponencialmente, áreas onde a gráfica não atua. Além disso, a comunicação interna é lenta, feita quase toda em papel, o que atrasa as decisões.\n\nRecentemente, duas gráficas modernas e 100% digitais abriram na mesma cidade, oferecendo preços 15% menores e entrega expressa em 24h. A Papel & Arte tem recursos in caixa, mas precisa decidir urgentemente qual caminho estratégico tomar para garantir sua sobrevivência."
+        };
+
+        let currentCaseStudy = JSON.parse(localStorage.getItem('eduApp_caseStudy')) || defaultCaseStudy;
+        let sessionData = {
+            members: [],
+            swot: {},
+            action: "",
+            porter: {},
+            date: null
+        };
+
+        // ---------------------------------------------------------
+        // 3. NAVEGAÇÃO E UI
+        // ---------------------------------------------------------
+        const screens = document.querySelectorAll('.screen');
+        function showScreen(screenId) {
+            screens.forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function updateProgress(stepIndex) {
+            const totalSteps = 4;
+            const percentage = (stepIndex / totalSteps) * 100;
+            document.getElementById('student-progress').style.width = `${percentage}%`;
+        }
+
+        window.toggleHint = function(id) {
+            const el = document.getElementById(id);
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        };
+
+        // ---------------------------------------------------------
+        // 4. LÓGICA DO ALUNO
+        // ---------------------------------------------------------
+        function loadCaseData() {
+            document.getElementById('case-title-display').innerText = currentCaseStudy.title;
+            document.getElementById('case-description-display').innerText = currentCaseStudy.description;
+        }
+        loadCaseData();
+
+        const btnAddMember = document.getElementById('btn-add-member');
+        const inputMember = document.getElementById('member-name');
+        const membersList = document.getElementById('members-list');
+        const btnStartGame = document.getElementById('btn-start-game');
+
+        function renderMembers() {
+            membersList.innerHTML = '';
+            sessionData.members.forEach((m, index) => {
+                const tag = document.createElement('span');
+                tag.className = 'member-tag';
+                tag.innerHTML = `${m} <button onclick="removeMember(${index})"><i class="fa-solid fa-xmark"></i></button>`;
+                membersList.appendChild(tag);
+            });
+            btnStartGame.disabled = sessionData.members.length === 0;
+        }
+
+        window.removeMember = function(index) {
+            sessionData.members.splice(index, 1);
+            renderMembers();
+        };
+
+        btnAddMember.addEventListener('click', () => {
+            const name = inputMember.value.trim();
+            if(name) {
+                sessionData.members.push(name);
+                inputMember.value = '';
+                renderMembers();
+            }
+        });
+
+        btnStartGame.addEventListener('click', () => {
+            showScreen('screen-student');
+            document.getElementById('step-1').style.display = 'block';
+            updateProgress(1);
+        });
+
+        document.querySelectorAll('.btn-next').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const nextStep = e.target.getAttribute('data-next');
+                document.querySelectorAll('.step-content').forEach(s => s.style.display = 'none');
+                document.getElementById(`step-${nextStep}`).style.display = 'block';
+                updateProgress(parseInt(nextStep));
+            });
+        });
+        document.querySelectorAll('.btn-prev').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const prevStep = e.currentTarget.getAttribute('data-prev');
+                document.querySelectorAll('.step-content').forEach(s => s.style.display = 'none');
+                document.getElementById(`step-${prevStep}`).style.display = 'block';
+                updateProgress(parseInt(prevStep));
+            });
+        });
+
+        document.getElementById('form-swot').addEventListener('submit', (e) => {
+            e.preventDefault();
+            sessionData.swot = {
+                s: [document.getElementById('s1').value, document.getElementById('s2').value, document.getElementById('s3').value].filter(Boolean),
+                w: [document.getElementById('w1').value, document.getElementById('w2').value, document.getElementById('w3').value].filter(Boolean),
+                o: [document.getElementById('o1').value, document.getElementById('o2').value, document.getElementById('o3').value].filter(Boolean),
+                t: [document.getElementById('t1').value, document.getElementById('t2').value, document.getElementById('t3').value].filter(Boolean),
+            };
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-3').style.display = 'block';
+            updateProgress(3);
+        });
+
+        document.getElementById('form-action').addEventListener('submit', (e) => {
+            e.preventDefault();
+            sessionData.action = document.getElementById('strategic-action').value;
+            document.getElementById('step-3').style.display = 'none';
+            document.getElementById('step-4').style.display = 'block';
+            updateProgress(4);
+        });
+
+        // Submissão Otimizada: Sem travar a tela dos alunos!
+        document.getElementById('form-porter').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            sessionData.porter = {
+                rivalry: document.getElementById('p-riv').value,
+                suppliers: document.getElementById('p-forn').value,
+                customers: document.getElementById('p-cli').value,
+                entrants: document.getElementById('p-ent').value,
+                substitutes: document.getElementById('p-sub').value
+            };
+            sessionData.date = new Date().toISOString();
+
+            // Salva backup local instantâneo
+            let localSubs = JSON.parse(localStorage.getItem('eduApp_submissions')) || [];
+            localSubs.push(sessionData);
+            localStorage.setItem('eduApp_submissions', JSON.stringify(localSubs));
+            
+            // Avança os alunos na hora para a tela final
+            showScreen('screen-success');
+
+            // Deixa a gravação do Firebase rodando em segundo plano (se falhar, não atrapalha)
+            if (db) {
+                addDoc(collection(db, "submissions"), {
+                    ...sessionData,
+                    createdAt: serverTimestamp()
+                }).catch(err => console.log("Firebase indisponível no momento. O arquivo PDF garantirá a entrega."));
+            }
+        });
+
+        document.getElementById('btn-restart').addEventListener('click', () => {
+            location.reload();
+        });
+
+        // ---------------------------------------------------------
+        // 5. GERAÇÃO DE RELATÓRIO PDF COMPLETO (ARTEFATO DE ENTREGA)
+        // ---------------------------------------------------------
+        document.getElementById('btn-download-pdf').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Cabeçalho institucional
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(22);
+            doc.setTextColor(139, 92, 246); 
+            doc.text("Relatório de Análise Estratégica", 20, 20);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(110, 110, 110);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Curso Técnico Integrado ao Ensino Médio em Segurança do Trabalho`, 20, 28);
+            doc.text(`Disciplina: Gerenciamento e Comunicação`, 20, 34);
+            doc.text(`Estudo de Caso: ${currentCaseStudy.title}`, 20, 40);
+            doc.text(`Data de Geração: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 20, 46);
+
+            // Integrantes
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(15, 23, 42);
+            doc.text("Integrantes da Equipe:", 20, 58);
+            doc.setFont("helvetica", "normal");
+            let currentY = 64;
+            sessionData.members.forEach((m) => {
+                doc.text(`• ${m}`, 25, currentY);
+                currentY += 6;
+            });
+
+            // Seção 1: Matriz SWOT
+            currentY += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("1. MATRIZ SWOT", 20, currentY);
+            currentY += 8;
+
+            doc.setFont("helvetica", "bold"); doc.text("Forças (Fatores Internos Positivos):", 25, currentY); doc.setFont("helvetica", "normal");
+            sessionData.swot.s.forEach(item => { currentY += 6; doc.text(`- ${item}`, 30, currentY); });
+            
+            currentY += 8;
+            doc.setFont("helvetica", "bold"); doc.text("Fraquezas (Fatores Internos Negativos):", 25, currentY); doc.setFont("helvetica", "normal");
+            sessionData.swot.w.forEach(item => { currentY += 6; doc.text(`- ${item}`, 30, currentY); });
+
+            currentY += 8;
+            doc.setFont("helvetica", "bold"); doc.text("Oportunidades (Fatores Externos Positivos):", 25, currentY); doc.setFont("helvetica", "normal");
+            sessionData.swot.o.forEach(item => { currentY += 6; doc.text(`- ${item}`, 30, currentY); });
+
+            currentY += 8;
+            doc.setFont("helvetica", "bold"); doc.text("Ameaças (Fatores Externos Negativos):", 25, currentY); doc.setFont("helvetica", "normal");
+            sessionData.swot.t.forEach(item => { currentY += 6; doc.text(`- ${item}`, 30, currentY); });
+
+            // Seção 2 e 3 em nova página para organização limpa
+            doc.addPage();
+            currentY = 20;
+
+            doc.setFont("helvetica", "bold");
+            doc.text("2. AÇÃO ESTRATÉGICA PRIORITÁRIA", 20, currentY);
+            currentY += 8;
+            doc.setFont("helvetica", "normal");
+            const splitAction = doc.splitTextToSize(sessionData.action, 170);
+            doc.text(splitAction, 20, currentY);
+            currentY += (splitAction.length * 6) + 12;
+
+            doc.setFont("helvetica", "bold");
+            doc.text("3. ANÁLISE DAS 5 FORÇAS DE PORTER", 20, currentY);
+            
+            const porterData = [
+                { title: "Rivalidade entre Concorrentes:", text: sessionData.porter.rivalry },
+                { title: "Poder de Barganha dos Fornecedores:", text: sessionData.porter.suppliers },
+                { title: "Poder de Barganha dos Clientes:", text: sessionData.porter.customers },
+                { title: "Ameaça de Novos Entrantes:", text: sessionData.porter.entrants },
+                { title: "Ameaça de Produtos Substitutos:", text: sessionData.porter.substitutes }
+            ];
+
+            porterData.forEach(p => {
+                currentY += 10;
+                if (currentY > 260) { doc.addPage(); currentY = 20; }
+                doc.setFont("helvetica", "bold");
+                doc.text(p.title, 20, currentY);
+                currentY += 6;
+                doc.setFont("helvetica", "normal");
+                const splitPorterText = doc.splitTextToSize(p.text, 170);
+                doc.text(splitPorterText, 20, currentY);
+                currentY += (splitPorterText.length * 6);
+            });
+
+            // Código para o nome do arquivo amigável baseado no primeiro integrante
+            const primeiroNome = sessionData.members[0].split(' ')[0].toLowerCase();
+            doc.save(`entrega_estrategica_${primeiroNome}.pdf`);
+        });
+
+        // ---------------------------------------------------------
+        // 6. LÓGICA DO PROFESSOR (Painel e Edição)
+        // ---------------------------------------------------------
+        document.getElementById('toggle-mode-btn').addEventListener('click', () => {
+            showScreen('screen-teacher-login');
+        });
+
+        document.getElementById('btn-teacher-login').addEventListener('click', () => {
+            const pin = document.getElementById('teacher-pin').value;
+            if(pin === '1234') { 
+                showScreen('screen-teacher-panel');
+                loadSubmissions();
+            } else {
+                alert("Senha incorreta.");
+            }
+        });
+
+        async function loadSubmissions() {
+            const tbody = document.getElementById('submissions-table-body');
+            tbody.innerHTML = '<tr><td colspan="4">Carregando dados...</td></tr>';
+            let data = [];
+
+            if (db) {
+                try {
+                    const q = query(collection(db, "submissions"), orderBy("createdAt", "desc"));
+                    const querySnapshot = await getDocs(q);
+                    querySnapshot.forEach((doc) => {
+                        data.push({ id: doc.id, ...doc.data() });
+                    });
+                } catch(e) {
+                    data = JSON.parse(localStorage.getItem('eduApp_submissions')) || [];
+                }
+            } else {
+                data = JSON.parse(localStorage.getItem('eduApp_submissions')) || [];
+            }
+
+            renderTable(data);
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('submissions-table-body');
+            tbody.innerHTML = '';
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">Nenhuma entrega encontrada.</td></tr>';
+                return;
+            }
+
+            data.forEach(item => {
+                const date = item.date ? new Date(item.date).toLocaleString('pt-BR') : 'Data não registrada';
+                const membersStr = item.members ? item.members.join(', ') : 'Desconhecido';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${date}</td>
+                    <td><strong>${membersStr}</strong></td>
+                    <td><span style="color: var(--success-color)"><i class="fa-solid fa-check"></i> Concluído</span></td>
+                    <td class="action-btns">
+                        <button class="btn-icon" title="Ver Detalhes" onclick="alert('Ação Estratégica:\\n${item.action}')"><i class="fa-solid fa-eye"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('btn-refresh-data').addEventListener('click', loadSubmissions);
+
+        document.getElementById('btn-edit-case').addEventListener('click', () => {
+            showScreen('screen-teacher-editor');
+            document.getElementById('edit-case-title').value = currentCaseStudy.title;
+            document.getElementById('edit-case-desc').value = currentCaseStudy.description;
+        });
+
+        document.getElementById('btn-cancel-edit').addEventListener('click', () => {
+            showScreen('screen-teacher-panel');
+        });
+
+        document.getElementById('form-edit-case').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newTitle = document.getElementById('edit-case-title').value;
+            const newDesc = document.getElementById('edit-case-desc').value;
+            
+            currentCaseStudy = { title: newTitle, description: newDesc };
+            localStorage.setItem('eduApp_caseStudy', JSON.stringify(currentCaseStudy));
+            loadCaseData(); 
+            
+            alert('Estudo de caso atualizado com sucesso!');
+            showScreen('screen-teacher-panel');
+        });
+
+        document.getElementById('btn-export-case').addEventListener('click', () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentCaseStudy));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href",     dataStr);
+            downloadAnchorNode.setAttribute("download", "estudo_de_caso.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        });
+
+        document.getElementById('import-case').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedCase = JSON.parse(e.target.result);
+                    if(importedCase.title && importedCase.description) {
+                        document.getElementById('edit-case-title').value = importedCase.title;
+                        document.getElementById('edit-case-desc').value = importedCase.description;
+                        alert("Estudo de caso importado! Clique em 'Salvar Alterações' para aplicar.");
+                    } else {
+                        alert("Arquivo JSON inválido.");
+                    }
+                } catch(err) {
+                    alert("Erro ao ler o arquivo JSON.");
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('btn-export-csv').addEventListener('click', () => {
+            const data = JSON.parse(localStorage.getItem('eduApp_submissions')) || [];
+            if(data.length === 0) {
+                alert("Não há dados para exportar."); return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Data,Membros,AcaoEstrategica\n";
+            data.forEach(row => {
+                const membros = row.members.join(" | ");
+                const acao = row.action.replace(/,/g, " "); 
+                csvContent += `${row.date},${membros},${acao}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "entregas_estrategia.csv");
+            document.body.appendChild(link);
+            link.click();
+        });
+
+    </script>
+</body>
+</html>
