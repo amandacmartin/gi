@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz & Estudo de Caso: Inovação na Micraytech</title>
+  <style>
+    :root {
+      --primary-color: #1e3a8a;
+      --primary-hover: #1d4ed8;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border-color: #cbd5e1;
+      --correct-color: #16a34a;
+      --correct-bg: #f0fdf4;
+      --wrong-color: #dc2626;
+      --wrong-bg: #fef2f2;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    /* Abas do Celular */
+    .mobile-tabs {
+      display: none;
+      background-color: #e2e8f0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem;
+      border: none;
+      background: none;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .tab-btn.active {
+      background-color: white;
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--primary-color);
+    }
+
+    /* Container Principal */
+    .app-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 57px);
+      overflow: hidden;
+    }
+
+    /* Painel Esquerdo: Texto Base */
+    .text-panel {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+      background-color: #ffffff;
+      border-right: 1px solid var(--border-color);
+    }
+
+    .text-panel h2 {
+      color: var(--primary-color);
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      font-size: 1.15rem;
+      border-bottom: 2px solid #eff6ff;
+      padding-bottom: 0.3rem;
+    }
+
+    .text-panel h2:first-of-type {
+      margin-top: 0;
+    }
+
+    .text-panel p {
+      margin-bottom: 1rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+      text-align: justify;
+    }
+
+    /* Painel Direito: Quiz */
+    .quiz-panel {
+      flex: 1.2;
+      padding: 2rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: var(--bg-color);
+    }
+
+    .quiz-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 650px;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      margin: auto 0;
+    }
+
+    /* Progresso */
+    .progress-container {
+      margin-bottom: 1.25rem;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background-color: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.4rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: var(--primary-color);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Questão e Opções */
+    .question-title {
+      font-size: 1.1rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+    }
+
+    .options-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .option-item {
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+      line-height: 1.3;
+    }
+
+    .option-item:hover:not(.disabled) {
+      border-color: var(--primary-color);
+      background-color: #eff6ff;
+    }
+
+    .option-item.selected {
+      border-color: var(--primary-color);
+      background-color: #dbeafe;
+      font-weight: 600;
+    }
+
+    .option-item.correct {
+      border-color: var(--correct-color);
+      background-color: var(--correct-bg);
+      color: var(--correct-color);
+      font-weight: 600;
+    }
+
+    .option-item.wrong {
+      border-color: var(--wrong-color);
+      background-color: var(--wrong-bg);
+      color: var(--wrong-color);
+    }
+
+    .option-item.disabled {
+      cursor: default;
+    }
+
+    /* Feedback Box */
+    .feedback-box {
+      margin-top: 1.25rem;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      display: none;
+    }
+
+    .feedback-box.correct {
+      display: block;
+      background-color: var(--correct-bg);
+      color: var(--correct-color);
+      border: 1px solid var(--correct-color);
+    }
+
+    .feedback-box.wrong {
+      display: block;
+      background-color: var(--wrong-bg);
+      color: var(--wrong-color);
+      border: 1px solid var(--wrong-color);
+    }
+
+    /* Botões */
+    .actions {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      width: 100%;
+    }
+
+    @media (min-width: 640px) {
+      .btn {
+        width: auto;
+      }
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn:disabled {
+      background-color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    /* Card de Resumo Final */
+    .summary-card {
+      display: none;
+      max-height: 100%;
+      overflow-y: auto;
+    }
+
+    .score-banner {
+      text-align: center;
+      padding: 1.25rem;
+      background-color: #eff6ff;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-circle {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin: 0.25rem 0;
+    }
+
+    .summary-content {
+      border-top: 1px solid var(--border-color);
+      padding-top: 1rem;
+    }
+
+    .summary-content h2 {
+      color: var(--primary-color);
+      margin-top: 1.25rem;
+      margin-bottom: 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .summary-content p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+      text-align: justify;
+    }
+
+    /* REGRAS RESPONSIVAS (MÓVEL) */
+    @media (max-width: 850px) {
+      body {
+        height: auto;
+      }
+
+      .mobile-tabs {
+        display: flex;
+      }
+
+      .app-container {
+        height: auto;
+        flex-direction: column;
+      }
+
+      .text-panel, .quiz-panel {
+        width: 100%;
+        flex: none;
+        padding: 1.25rem;
+      }
+
+      .text-panel {
+        display: block; /* Padrão inicial */
+      }
+
+      .quiz-panel {
+        display: none; /* Escondido no mobile até clicar na aba */
+      }
+
+      .quiz-card {
+        margin: 0;
+        padding: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Micraytech — Caso & Quiz de Operações</h1>
+  </header>
+
+  <!-- Navegação por abas em telas menores -->
+  <div class="mobile-tabs">
+    <button id="tab-text" class="tab-btn active" onclick="switchTab('text')">📖 Texto do Caso</button>
+    <button id="tab-quiz" class="tab-btn" onclick="switchTab('quiz')">❓ Quiz</button>
+  </div>
+
+  <div class="app-container">
+    
+    <!-- PAINEL ESQUERDO: Texto Base Completo -->
+    <section id="text-panel" class="text-panel">
+      <h2>Inovação na Micraytech (Parte 1, de cima para baixo)</h2>
+      <p>A Micraytech é uma empresa de sistemas de metrologia que desenvolve sistemas de medição integrados para grandes clientes internacionais em diversos setores e faz parte do Micray Group, que inclui diversas empresas de alta tecnologia. Cresceu por meio de uma estratégia de fornecer produtos com alto grau de excelência técnica e inovação, aliada à capacidade de customizar seus sistemas e oferecer assessoria técnica aos seus clientes. O grupo estabeleceu metas de crescimento ambiciosas para a empresa nos próximos cinco anos e relaxou suas metas normais de retorno sobre vendas para ajudá-la a alcançar isso. Como parte dessa estratégia, a Micraytech tentou ser a primeira no mercado com todas as inovações técnicas apropriadas. Pela perspectiva top-down, sua função produção, portanto, precisava ser capaz de lidar com as mudanças que a constante inovação de produtos traria. Desenvolveu processos flexíveis o suficiente para desenvolver e montar novos componentes e sistemas, integrando-os com inovações de software.</p>
+      <p>A função produção da empresa percebeu que precisava organizar e treinar sua equipe para entender a forma como a tecnologia está se desenvolvendo para que pudesse implementar as mudanças necessárias na operação. Também precisava desenvolver relacionamentos com fornecedores existentes e potencialmente novos que pudessem responder rapidamente ao fornecer novos componentes. Então, a lógica top-down aqui é que tudo na operação — seus processos, equipe, sistemas e procedimentos — deve, no curto prazo, não inibir e, no longo prazo, desenvolver ativamente a estratégia competitiva de crescimento da empresa por meio da inovação.</p>
+
+      <h2>Inovação na Micraytech (Parte 2, de fora para dentro)</h2>
+      <p>O grupo Micray viu uma grande oportunidade de crescimento para a Micraytech ao incorporar continuamente inovações tecnológicas em suas ofertas de produtos. No entanto, a gestão de marketing da Micraytech sabia que isso poderia ser alcançado concentrando-se em um ou nos dois mercados distintos. O primeiro é o mercado de dispositivos de metrologia individual. São equipamentos autônomos adquiridos por todos os tipos de clientes industriais e que tradicionalmente eram o principal mercado da empresa. O segundo mercado era para sistemas integrados de metrologia. Eram ofertas maiores, mais complexas, mais caras (e com margens mais altas) customizadas para os requisitos individuais dos clientes. Os dois tipos de oferta tinham características sobrepostas, porém diferentes. Os dispositivos de metrologia individual competiam em seu desempenho técnico e confiabilidade, assim como com prazos de entrega relativamente curtos em comparação com os concorrentes. As ofertas de sistemas integrados de metrologia atualmente representavam apenas uma pequena parte das vendas da empresa, mas esse mercado previa um crescimento substancial. Os clientes desses sistemas eram fabricantes maiores, que investiam em tecnologias mais automatizadas e precisavam de sistemas de metrologia que pudessem ser integrados aos seus processos. De uma perspectiva de fora para dentro, para tirar proveito desse mercado emergente, a Micraytech teria que aprender a trabalhar mais de perto tanto com seus clientes diretos quanto com as empresas que estavam fornecendo a seus clientes as tecnologias automatizadas. Além das habilidades técnicas tradicionais da Micraytech, ela teria que aumentar suas habilidades em desenvolvimento de software, troca de dados e relacionamento com o cliente.</p>
+
+      <h2>Inovação na Micraytech (Parte 3, de baixo para cima)</h2>
+      <p>Com o tempo, à medida que sua estratégia de operações se desenvolvia, a Micraytech descobriu que a inovação contínua de produtos e sistemas estava tendo o efeito de aumentar seus custos drasticamente. Embora não estivesse competindo com preços baixos nem estivesse sob pressão do grupo para alcançar altas taxas de retorno sobre as vendas, seus custos cada vez maiores estavam afetando a lucratividade a um grau inaceitável. Além disso, havia alguma evidência de que a atualização contínua das especificações do produto e do sistema estava deixando alguns clientes confusos. Respondendo em parte às solicitações dos clientes, os projetistas de sistemas da empresa começaram a descobrir uma maneira de modularizar seus projetos de sistemas e produtos. Isso permitiu que uma parte do sistema fosse atualizada para aqueles clientes que valorizavam a funcionalidade que a inovação poderia trazer, sem interferir no projeto geral do corpo principal do sistema, do qual o módulo fazia parte. Com o tempo, essa abordagem tornou-se uma prática-padrão de projeto dentro da empresa. Os clientes apreciaram a personalização extra e a modularização reduziu os custos operacionais. Observe que essa estratégia surgiu da experiência da empresa e foi, portanto, um exemplo de uma abordagem puramente de baixo para cima. Inicialmente, nenhuma decisão do conselho de nível superior da empresa foi tomada para iniciar essa prática. Entretanto, ela surgiu como a maneira pela qual os engenheiros de projeto da empresa aprenderam com sua experiência e usaram esse aprendizado para aumentar seu conhecimento de como reduzir alguns dos custos da inovação.</p>
+
+      <h2>Inovação na Micraytech (Parte 4, de dentro para fora)</h2>
+      <p>A abordagem modular para o projeto do produto (descrita na Parte 3 deste exemplo resolvido) provou ser um grande sucesso para a Micraytech. Entretanto, apresentou dois desafios para as operações da empresa. Primeiro, os aspectos técnicos da integração de alguns dos módulos mais sofisticados se mostraram difíceis. Isso afetou apenas uma pequena parte dos clientes, mas eles eram os que estavam dispostos a pagar preços mais altos por seus sistemas. A única solução potencial era tentar desenvolver os módulos de interface que permitissem a integração de módulos anteriormente incompatíveis. Quando essa solução foi proposta pela primeira vez, as competências relevantes não estavam presentes na empresa. Ela precisou recrutar engenheiros especialistas para começar a projetar as interfaces. Durante esse processo de projeto, a empresa percebeu que poderia abrir um novo mercado. Como disse o diretor de operações (COO) da empresa: “Se projetássemos as interfaces com cuidado, poderíamos não apenas integrar todos os nossos módulos internos, mas também integrar os instrumentos de outras empresas em nossos sistemas”. Isso levou ao segundo conjunto de desafios: desenvolver relacionamentos com possíveis fornecedores, que poderiam muito bem ser concorrentes em alguns mercados, para que eles estivessem dispostos a fornecer seus equipamentos para serem integrados aos sistemas da Micraytech. Não só isso, mas também a empresa tinha que garantir que os processos internos de seus engenheiros de vendas consultassem os clientes, seu departamento de projeto desenvolvesse o sistema para atender às necessidades dos clientes e seus gerentes de compras negociassem com fornecedores de equipamentos, com tudo funcionando perfeitamente. “O sucesso que desfrutamos pode ser atribuído a duas competências principais. A primeira foi comprar as habilidades de engenharia para criar interfaces tecnicamente difíceis. Isso nos levou a entender o valor que poderia ser obtido com uma rede de suprimentos interna e externa sem emendas. Esses dois recursos não são totalmente impossíveis de serem copiados por outras empresas, mas seria muito difícil para eles chegarem ao nosso nível de excelência” (COO, Micraytech). Aqui, vemos um exemplo claro da perspectiva de recursos de produção dominando o direcionamento da estratégia geral de negócios da Micraytech.</p>
+    </section>
+
+    <!-- PAINEL DIREITO: Quiz Interativo -->
+    <section id="quiz-panel" class="quiz-panel">
+      
+      <!-- Card do Quiz -->
+      <div id="quiz-card" class="quiz-card">
+        <div class="progress-container">
+          <div class="progress-text">Pergunta <span id="current-num">1</span> de <span id="total-num">8</span></div>
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <h3 id="question-title" class="question-title">Carregando...</h3>
+
+        <ul id="options-list" class="options-list"></ul>
+
+        <div id="feedback-box" class="feedback-box"></div>
+
+        <div class="actions">
+          <button id="action-btn" class="btn" onclick="handleAction()" disabled>Confirmar</button>
+        </div>
+      </div>
+
+      <!-- Card de Resultado e Resumo Executivo -->
+      <div id="summary-card" class="quiz-card summary-card">
+        <div class="score-banner">
+          <h2>Quiz Concluído!</h2>
+          <div id="score-percentage" class="score-circle">0%</div>
+          <p id="score-text">Você acertou 0 de 8 perguntas.</p>
+        </div>
+
+        <div class="summary-content">
+          <h2 style="font-size: 1.2rem; margin-bottom: 0.75rem; border-bottom: 2px solid var(--primary-color); padding-bottom: 0.3rem;">
+            Resumo Executivo: Estratégia de Operações na Micraytech
+          </h2>
+          <p>A trajetória da Micraytech ilustra como a estratégia de operações deve equilibrar diretrizes corporativas, demandas de mercado, aprendizado operacional e desenvolvimento de capacidades internas. Abaixo está a síntese do caso sob as quatro perspectivas clássicas da estratégia de produção.</p>
+
+          <h2>Perspectiva Top-Down (De Cima para Baixo)</h2>
+          <p><strong>Direcionamento Estratégico:</strong> A alta gestão do Micray Group estabeleceu metas de crescimento ambiciosas e flexibilizou as exigências de retorno financeiro de curto prazo para que a Micraytech liderasse o mercado com inovações técnicas.<br>
+          <strong>Papel das Operações:</strong> A função produção adaptou-se para suportar a constante inovação, desenvolvendo processos altamente flexíveis para montagem e integração de software, além de capacitar a equipe e alinhar fornecedores para respostas rápidas.</p>
+
+          <h2>Perspectiva Outside-In (De Fora para Dentro)</h2>
+          <p><strong>Leitura de Mercado:</strong> A empresa identificou a transição de um mercado maduro de dispositivos individuais para um segmento emergente e de alta margem: sistemas integrados de metrologia para grandes fabricantes automatizados.<br>
+          <strong>Adequação da Produção:</strong> Para atender às novas exigências dos clientes, as operações expandiram seu escopo além do rigor técnico tradicional, incorporando competências em desenvolvimento de software, integração de dados e relacionamento consultivo com clientes e parceiros tecnológicos.</p>
+
+          <h2>Perspectiva Bottom-Up (De Baixo para Cima)</h2>
+          <p><strong>Desafio Operacional:</strong> A inovação contínua gerou aumento excessivo de custos operacionais e gerou confusão em clientes devido às frequentes mudanças nas especificações dos produtos.<br>
+          <strong>Emergência da Solução:</strong> A partir do aprendizado prático e sem determinação inicial do conselho, os engenheiros projetaram uma arquitetura modular. A modularização permitiu atualizar funcionalidades específicas sem alterar a estrutura principal, reduzindo custos e sendo adotada formalmente como padrão da empresa.</p>
+
+          <h2>Perspectiva Inside-Out (De Dentro para Fora)</h2>
+          <p><strong>Capacidade Distintiva:</strong> Para resolver a complexidade de integração de módulos avançados, a Micraytech recrutou especialistas e desenvolveu uma competência única na criação de interfaces de integração.<br>
+          <strong>Nova Oportunidade de Negócio:</strong> Em vez de limitar as interfaces aos seus próprios módulos, a empresa percebeu que poderia integrar instrumentos de concorrentes nos sistemas Micraytech. Essa capacidade interna de engenharia e gestão de rede de suprimentos tornou-se a principal vantagem competitiva da empresa no mercado, difícil de ser replicada.</p>
+
+          <h2>Conclusão</h2>
+          <p>O sucesso da Micraytech reflete o alinhamento dinâmico entre a visão do grupo (Top-Down), as tendências tecnológicas dos clientes (Outside-In), a resolução prática de problemas pelos engenheiros (Bottom-Up) e a comercialização de recursos internos raros (Inside-Out).</p>
+        </div>
+
+        <div class="actions" style="margin-top: 1.5rem;">
+          <button class="btn" onclick="restartQuiz()">Refazer Quiz</button>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "1. Na perspectiva top-down (de cima para baixo), qual era o principal objetivo da função produção da Micraytech?",
+        options: [
+          "A) Reduzir os preços dos produtos para competir com concorrentes.",
+          "B) Apoiar a estratégia de crescimento por meio da inovação, tornando os processos flexíveis e preparados para mudanças.",
+          "C) Produzir apenas equipamentos de metrologia individuais.",
+          "D) Diminuir o número de fornecedores."
+        ],
+        correct: 1
+      },
+      {
+        question: "2. Ainda na estratégia top-down, quais ações a empresa adotou para apoiar sua estratégia?",
+        options: [
+          "A) Treinar a equipe, adaptar processos e fortalecer o relacionamento com fornecedores.",
+          "B) Reduzir investimentos em software.",
+          "C) Padronizar todos os produtos, eliminando customizações.",
+          "D) Cortar treinamentos para reduzir custos."
+        ],
+        correct: 0
+      },
+      {
+        question: "3. Na perspectiva de fora para dentro (outside-in), qual oportunidade de mercado a Micraytech identificou?",
+        options: [
+          "A) Expandir apenas a venda de dispositivos individuais.",
+          "B) Crescer no mercado de sistemas integrados de metrologia, que apresentava maior potencial de crescimento.",
+          "C) Abandonar os clientes industriais.",
+          "D) Concentrar-se apenas na redução de custos."
+        ],
+        correct: 1
+      },
+      {
+        question: "4. Para aproveitar o mercado de sistemas integrados, a empresa precisou desenvolver principalmente:",
+        options: [
+          "A) Apenas novas fábricas.",
+          "B) Habilidades em software, troca de dados e relacionamento com clientes e parceiros.",
+          "C) Menor interação com fornecedores.",
+          "D) Apenas melhorias na produção em massa."
+        ],
+        correct: 1
+      },
+      {
+        question: "5. Na perspectiva de baixo para cima (bottom-up), qual problema levou à mudança na estratégia?",
+        options: [
+          "A) A falta de clientes internacionais.",
+          "B) O aumento dos custos da inovação e a confusão dos clientes com constantes atualizações.",
+          "C) A baixa qualidade dos equipamentos.",
+          "D) A dificuldade em contratar funcionários."
+        ],
+        correct: 1
+      },
+      {
+        question: "6. Qual solução surgiu da experiência dos engenheiros na estratégia bottom-up?",
+        options: [
+          "A) Eliminar a inovação dos produtos.",
+          "B) Modularizar os produtos e sistemas, permitindo atualizações sem alterar todo o projeto.",
+          "C) Produzir apenas equipamentos simples.",
+          "D) Trocar todos os fornecedores."
+        ],
+        correct: 1
+      },
+      {
+        question: "7. Na perspectiva de dentro para fora (inside-out), qual nova oportunidade surgiu a partir das competências desenvolvidas pela empresa?",
+        options: [
+          "A) Produzir equipamentos mais baratos.",
+          "B) Integrar equipamentos de outras empresas aos sistemas da Micraytech por meio de interfaces.",
+          "C) Encerrar a customização dos sistemas.",
+          "D) Atuar somente no mercado nacional."
+        ],
+        correct: 1
+      },
+      {
+        question: "8. Qual alternativa relaciona corretamente as quatro estratégias da produção?",
+        options: [
+          "A) Top-down: estratégia da empresa orienta a produção; Outside-in: mercado orienta a produção; Bottom-up: aprendizado operacional gera melhorias; Inside-out: competências internas criam novas oportunidades estratégicas.",
+          "B) Top-down: clientes definem a produção; Outside-in: engenheiros definem a estratégia; Bottom-up: conselho toma decisões; Inside-out: mercado define tudo.",
+          "C) Todas as estratégias têm o mesmo foco.",
+          "D) Apenas a estratégia bottom-up influencia a empresa."
+        ],
+        correct: 0
+      }
+    ];
+
+    let currentQuestion = 0;
+    let selectedOption = null;
+    let score = 0;
+    let isAnswerConfirmed = false;
+
+    const currentNumEl = document.getElementById("current-num");
+    const totalNumEl = document.getElementById("total-num");
+    const progressFillEl = document.getElementById("progress-fill");
+    const questionTitleEl = document.getElementById("question-title");
+    const optionsListEl = document.getElementById("options-list");
+    const feedbackBoxEl = document.getElementById("feedback-box");
+    const actionBtnEl = document.getElementById("action-btn");
+    const quizCardEl = document.getElementById("quiz-card");
+    const summaryCardEl = document.getElementById("summary-card");
+
+    function initQuiz() {
+      totalNumEl.textContent = quizData.length;
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      isAnswerConfirmed = false;
+      selectedOption = null;
+      actionBtnEl.textContent = "Confirmar";
+      actionBtnEl.disabled = true;
+      feedbackBoxEl.className = "feedback-box";
+      feedbackBoxEl.style.display = "none";
+
+      const data = quizData[currentQuestion];
+      currentNumEl.textContent = currentQuestion + 1;
+      const progressPercent = (currentQuestion / quizData.length) * 100;
+      progressFillEl.style.width = `${progressPercent}%`;
+
+      questionTitleEl.textContent = data.question;
+
+      optionsListEl.innerHTML = "";
+      data.options.forEach((opt, idx) => {
+        const li = document.createElement("li");
+        li.className = "option-item";
+        li.textContent = opt;
+        li.onclick = () => selectOption(idx);
+        optionsListEl.appendChild(li);
+      });
+    }
+
+    function selectOption(index) {
+      if (isAnswerConfirmed) return;
+      selectedOption = index;
+      const items = optionsListEl.querySelectorAll(".option-item");
+      items.forEach((item, idx) => {
+        item.classList.toggle("selected", idx === index);
+      });
+      actionBtnEl.disabled = false;
+    }
+
+    function handleAction() {
+      if (!isAnswerConfirmed) {
+        confirmAnswer();
+      } else {
+        nextQuestion();
+      }
+    }
+
+    function confirmAnswer() {
+      isAnswerConfirmed = true;
+      const data = quizData[currentQuestion];
+      const items = optionsListEl.querySelectorAll(".option-item");
+
+      items.forEach(item => item.classList.add("disabled"));
+
+      if (selectedOption === data.correct) {
+        score++;
+        items[selectedOption].classList.remove("selected");
+        items[selectedOption].classList.add("correct");
+        feedbackBoxEl.textContent = "Resposta Correta! Excelente interpretação do texto.";
+        feedbackBoxEl.className = "feedback-box correct";
+      } else {
+        items[selectedOption].classList.remove("selected");
+        items[selectedOption].classList.add("wrong");
+        items[data.correct].classList.add("correct");
+        feedbackBoxEl.innerHTML = `<strong>Incorreto.</strong> A resposta certa é: <em>${data.options[data.correct]}</em>`;
+        feedbackBoxEl.className = "feedback-box wrong";
+      }
+
+      actionBtnEl.textContent = currentQuestion === quizData.length - 1 ? "Ver Resumo Executivo" : "Próxima Pergunta";
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        showSummary();
+      }
+    }
+
+    function showSummary() {
+      quizCardEl.style.display = "none";
+      summaryCardEl.style.display = "block";
+
+      const percentage = Math.round((score / quizData.length) * 100);
+      document.getElementById("score-percentage").textContent = `${percentage}%`;
+      document.getElementById("score-text").textContent = `Você acertou ${score} de ${quizData.length} perguntas.`;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      summaryCardEl.style.display = "none";
+      quizCardEl.style.display = "block";
+      loadQuestion();
+    }
+
+    // Controle de Abas no Celular
+    function switchTab(tab) {
+      const textPanel = document.getElementById("text-panel");
+      const quizPanel = document.getElementById("quiz-panel");
+      const tabText = document.getElementById("tab-text");
+      const tabQuiz = document.getElementById("tab-quiz");
+
+      if (tab === 'text') {
+        textPanel.style.display = "block";
+        quizPanel.style.display = "none";
+        tabText.classList.add("active");
+        tabQuiz.classList.remove("active");
+      } else {
+        textPanel.style.display = "none";
+        quizPanel.style.display = "flex";
+        tabQuiz.classList.add("active");
+        tabText.classList.remove("active");
+      }
+    }
+
+    window.onload = initQuiz;
+  </script>
+</body>
+</html>
