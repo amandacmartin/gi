@@ -122,4 +122,103 @@
             color: var(--accent-blue);
         }
 
-        .card-capacidade .card-
+        .card-capacidade .card-icon {
+            background-color: rgba(249, 115, 22, 0.15);
+            color: var(--accent-orange);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-description {
+            color: var(--text-muted);
+            font-size: 0.925rem;
+            line-height: 1.5;
+        }
+
+        .arrow-icon {
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover .arrow-icon {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Gestão Industrial</h1>
+            <p class="subtitle">Escolha um módulo abaixo para iniciar suas atividades:</p>
+        </div>
+
+        <div class="menu-grid">
+            <a href="./swot.html" class="card card-swot">
+                <div>
+                    <div class="card-icon">
+                        <i data-lucide="layout-grid" size="24"></i>
+                    </div>
+                    <div class="card-title">
+                        Análise SWOT
+                        <i data-lucide="arrow-right" class="arrow-icon" size="20"></i>
+                    </div>
+                    <p class="card-description">Mapeie Forças, Oportunidades, Fraquezas e Ameaças da operação.</p>
+                </div>
+            </a>
+
+            <a href="./estrategia.html" class="card card-estrategia">
+                <div>
+                    <div class="card-icon">
+                        <i data-lucide="brain-circuit" size="24"></i>
+                    </div>
+                    <div class="card-title">
+                        Quiz - Estratégia
+                        <i data-lucide="arrow-right" class="arrow-icon" size="20"></i>
+                    </div>
+                    <p class="card-description">Teste seus conhecimentos sobre Estratégia de Produção e Operações.</p>
+                </div>
+            </a>
+
+            <a href="./demanda.html" class="card card-demanda">
+                <div>
+                    <div class="card-icon">
+                        <i data-lucide="line-chart" size="24"></i>
+                    </div>
+                    <div class="card-title">
+                        Previsão de Demanda
+                        <i data-lucide="arrow-right" class="arrow-icon" size="20"></i>
+                    </div>
+                    <p class="card-description">Exercícios sobre projeção de demanda e análise de tendências.</p>
+                </div>
+            </a>
+
+            <a href="./capacidade.html" class="card card-capacidade">
+                <div>
+                    <div class="card-icon">
+                        <i data-lucide="gauge" size="24"></i>
+                    </div>
+                    <div class="card-title">
+                        Capacidade Produtiva
+                        <i data-lucide="arrow-right" class="arrow-icon" size="20"></i>
+                    </div>
+                    <p class="card-description">Exercícios sobre cálculo de gargalos e eficiência produtiva.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
