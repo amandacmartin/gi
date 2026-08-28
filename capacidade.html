@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exercícios de Capacidade e Eficiência</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --error-bg: #fef2f2;
+      --error-text: #991b1b;
+      --success-bg: #f0fdf4;
+      --success-text: #166534;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding-bottom: 90px;
+    }
+
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      color: var(--primary);
+    }
+
+    main {
+      max-width: 680px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .question-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .question-text {
+      font-size: 1.02rem;
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+      font-weight: 500;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .option-btn {
+      background: var(--bg-color);
+      border: 1px solid var(--border);
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      color: var(--text-main);
+    }
+
+    .option-btn:hover {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .option-btn.selected {
+      border-color: var(--primary);
+      background: #dbeafe;
+      font-weight: 600;
+    }
+
+    .finish-btn, .retry-btn {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      margin-top: 1rem;
+    }
+
+    .finish-btn:hover, .retry-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .retry-btn {
+      background: #475569;
+    }
+
+    .retry-btn:hover {
+      background: #334155;
+    }
+
+    /* Formulário Fixo */
+    .formula-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 100;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .formula-toggle {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .formula-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      width: 100%;
+      max-width: 600px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      margin-top: 0.5rem;
+    }
+
+    .formula-content.open {
+      max-height: 250px;
+      padding: 1rem;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+
+    .formula-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .formula-box {
+      background: white;
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    /* Certificado / Relatório Final */
+    .certificate {
+      border: 2px dashed var(--primary);
+      background: #f0f9ff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .certificate h2 {
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      font-size: 1.4rem;
+    }
+
+    .score-badge {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 1rem 0;
+    }
+
+    .error-list {
+      text-align: left;
+      background: #ffffff;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin: 1rem 0;
+    }
+
+    .error-list h3 {
+      font-size: 0.95rem;
+      color: var(--error-text);
+      margin-bottom: 0.5rem;
+    }
+
+    .error-list ul {
+      list-style-type: square;
+      padding-left: 1.2rem;
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .stamp {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+
+    .warning-msg {
+      color: var(--error-text);
+      background: var(--error-bg);
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Exercícios Práticos de Capacidade</h1>
+  </header>
+
+  <main id="app">
+    <!-- As questões serão inseridas aqui pelo JS -->
+  </main>
+
+  <!-- Formulário Fixo -->
+  <div class="formula-bar">
+    <button class="formula-toggle" onclick="toggleFormula()">
+      📐 Formulário & Relações
+    </button>
+    <div class="formula-content" id="formulaDrawer">
+      <div class="formula-grid">
+        <div class="formula-box">
+          <strong>Capacidade Efetiva</strong> = Cap. Projetada - Perda Planejada
+        </div>
+        <div class="formula-box">
+          <strong>Produção Real</strong> = Cap. Efetiva - Perda Não Planejada
+        </div>
+        <div class="formula-box">
+          <strong>Utilização</strong> = Produção Real / Capacidade Projetada
+        </div>
+        <div class="formula-box">
+          <strong>Eficiência</strong> = Produção Real / Capacidade Efetiva
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        id: "q1",
+        title: "Questão 1",
+        text: "Um centro de trabalho consiste em três máquinas. Cada máquina está programada para 16 horas por dia e cinco dias por semana.<br><br>a) Qual é o tempo semanal disponível, em horas, do centro de trabalho?<br>b) Considerando que o centro de trabalho utiliza 75% do tempo disponível, quantas horas são efetivamente trabalhadas?",
+        options: [
+          { text: "A) 160 horas / 120 horas", correct: false },
+          { text: "B) 240 horas / 150 horas", correct: false },
+          { text: "C) 240 horas / 180 horas", correct: true },
+          { text: "D) 280 horas / 210 horas", correct: false },
+          { text: "E) 320 horas / 240 horas", correct: false }
+        ]
+      },
+      {
+        id: "q2",
+        title: "Questão 2",
+        text: "Em uma lanchonete a capacidade máxima da chapa para hambúrguer é de 12.000 unidades por dia, sendo que atualmente são vendidos 7080 hamburgueres. Qual é a taxa de utilização dessa chapa? ",
+        options: [
+          { text: "A) 49%", correct: false },
+          { text: "B) 52%", correct: false },
+          { text: "C) 59%", correct: true },
+          { text: "D) 63%", correct: false },
+          { text: "E) 71%", correct: false }
+        ]
+      },
+      {
+        id: "q3",
+        title: "Questão 3",
+        text: "Na manufatura de dois produtos A e B existe certa operação de prensagem. Para o produto A, a operação toma 8 minutos, enquanto para o produto B toma apenas 2 minutos. Estima-se que a demanda mensal seja de 500 unidades para o produto A e 1.000 unidades para o produto B. Determinar a capacidade produtiva (da prensa) que está sendo usada, supondo um mês de 22 dias úteis de 8 horas diárias. Supor que a prensa é usada apenas com os dois produtos A e B e descontar do tempo disponível uma folga para manutenção e reparos no valor de 10% desse tempo disponível. Qual é a eficiência da operação?",
+        options: [
+          { text: "A) 55,42%", correct: false },
+          { text: "B) 60,00%", correct: false },
+          { text: "C) 63,13%", correct: true },
+          { text: "D) 70,15%", correct: false },
+          { text: "E) 75,80%", correct: false }
+        ]
+      },
+      {
+        id: "q4",
+        title: "Questão 4",
+        text: "Um determinado hospital atendeu 640 pacientes em um dia, considerando 80% de eficiência. Qual a capacidade efetiva considerando 7 dias na semana?",
+        options: [
+          { text: "A) 4.480 pacientes / semana", correct: false },
+          { text: "B) 5.120 pacientes / semana", correct: false },
+          { text: "C) 5.600 pacientes / semana", correct: true },
+          { text: "D) 6.200 pacientes / semana", correct: false },
+          { text: "E) 7.000 pacientes / semana", correct: false }
+        ]
+      },
+      {
+        id: "q5",
+        title: "Questão 5",
+        text: "Uma determinada empresa, fabricante de tecidos automotivos, está desenvolvendo um estudo para o dimensionamento de sua capacidade produtiva. Num levantamento prévio constatou-se que a empresa possui 100 máquinas em sua unidade fabril e cada máquina é capaz de produzir 20m de tecido por hora. A empresa trabalha num regime diário de apenas um turno de 8 horas e durante 22 dias no mês.<br>Para um estudo de eficiência foram apontados todos os tempos de paradas das máquinas no último mês, que totalizaram 410 h (considere paradas planejadas e não planejadas). Sendo assim podemos afirmar que a capacidade Teórica/projetada, a Produção Real e a Utilização da produção, são respectivamente:",
+        options: [
+          { text: "A) 352.000m, 320.000m e 90,90%", correct: false },
+          { text: "B) 352.000m, 343.800m e 97,67%", correct: true },
+          { text: "C) 380.000m, 343.800m e 90,47%", correct: false },
+          { text: "D) 400.000m, 350.000m e 87,50%", correct: false },
+          { text: "E) 352.000m, 310.000m e 88,06%", correct: false }
+        ]
+      },
+      {
+        id: "q6",
+        title: "Questão 6",
+        text: "Uma pequena empresa de engenharia sediada em Estocolmo, Suécia, fabrica três modelos de drones comerciais — Vortex, Elysia e Moln (nuvem). O modelo Vortex pode ser montado em 2,5 horas, o Elysia, em 1,5 hora e o Moln, em 0,75 hora. A empresa tem 600 homens-horas disponíveis para montagem por semana. <br>a)	Supondo que o mix da demanda pelos drones Vortex, Elysia e Moln esteja em uma proporção 2:2:4, qual a capacidade produtiva semanal? <br> b)	Suponha que a demanda no mix de atividades mudou para 3:2:3, qual é a capacidade produtiva semanal?",
+        options: [
+          { text: "A) 412,5 unidades / 350,8 unidades", correct: false },
+          { text: "B) 436,4 unidades / 376,5 unidades", correct: true },
+          { text: "C) 450,2 unidades / 320,0 unidades", correct: false },
+          { text: "D) 436,4 unidades / 400,0 unidades", correct: false },
+          { text: "E) 500,0 unidades / 376,5 unidades", correct: false }
+        ]
+      },
+      {
+        id: "q7",
+        title: "Questão 7 (Extra)",
+        text: "7.	Uma empresa está analisando uma família de produtos que utilizam a mesma matéria-prima e que são processados em 4 centros produtivos dispostos em linha (A, B, C e D). Não há perdas de material dentro do processo. Cada centro produtivo pode processar a quantidade de material conforme segue: <br> Centro Produtivo A = 2.000 toneladas por mês.<br> Centro Produtivo B = 1.800 toneladas por mês.<br> Centro Produtivo C = 2.200 toneladas por mês.<br> Centro Produtivo D = 1.900 toneladas por mês.<br>Qual é a capacidade do sistema?",
+        options: [
+          { text: "A) 1.800 T / mês", correct: true },
+          { text: "B) 1.900 T / mês", correct: false },
+          { text: "C) 2.000 T / mês", correct: false },
+          { text: "D) 2.200 T / mês", correct: false },
+          { text: "E) 7.900 T / mês", correct: false }
+        ]
+      }
+    ];
+
+    let userAnswers = {};
+
+    function renderAllQuestions() {
+      const app = document.getElementById("app");
+      
+      let html = questions.map((q) => `
+        <div class="card" id="card-${q.id}">
+          <div class="question-title">${q.title}</div>
+          <div class="question-text">${q.text}</div>
+          <div class="options">
+            ${q.options.map((opt, oIndex) => `
+              <button 
+                class="option-btn ${userAnswers[q.id] === oIndex ? 'selected' : ''}" 
+                onclick="selectOption('${q.id}', ${oIndex})"
+              >
+                ${opt.text}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      html += `
+        <div id="warningMsg" class="warning-msg">Por favor, responda a todas as questões antes de finalizar.</div>
+        <button class="finish-btn" onclick="finishQuiz()">Finalizar e Enviar</button>
+      `;
+
+      app.innerHTML = html;
+    }
+
+    function selectOption(questionId, optionIndex) {
+      userAnswers[questionId] = optionIndex;
+      
+      const card = document.getElementById(`card-${questionId}`);
+      const buttons = card.querySelectorAll('.option-btn');
+      
+      buttons.forEach((btn, idx) => {
+        if (idx === optionIndex) {
+          btn.classList.add('selected');
+        } else {
+          btn.classList.remove('selected');
+        }
+      });
+
+      document.getElementById('warningMsg').style.display = 'none';
+    }
+
+    function finishQuiz() {
+      const answeredCount = Object.keys(userAnswers).length;
+      
+      if (answeredCount < questions.length) {
+        const warning = document.getElementById('warningMsg');
+        warning.style.display = 'block';
+        warning.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      let correctCount = 0;
+      const wrongQuestions = [];
+
+      questions.forEach(q => {
+        const selectedIdx = userAnswers[q.id];
+        if (selectedIdx !== undefined && q.options[selectedIdx].correct) {
+          correctCount++;
+        } else {
+          wrongQuestions.push(q.title);
+        }
+      });
+
+      const percentage = Math.round((correctCount / questions.length) * 100);
+
+      const app = document.getElementById("app");
+      
+      let resultHtml = `
+        <div class="card certificate">
+          <h2>📄 Declaração de Conclusão</h2>
+          <p style="margin-top: 0.5rem; color: #475569;">Atividade de Capacidade e Eficiência concluída com sucesso!</p>
+          
+          <div class="score-badge">${percentage}% de Acerto</div>
+          <p style="font-size: 0.95rem;"><strong>Acertos:</strong> ${correctCount} de ${questions.length} questões</p>
+      `;
+
+      if (wrongQuestions.length > 0) {
+        resultHtml += `
+          <div class="error-list">
+            <h3>⚠️ Questões que você errou:</h3>
+            <ul>
+              ${wrongQuestions.map(title => `<li>${title}</li>`).join('')}
+            </ul>
+            <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; font-style: italic;">
+              Dica: Revise o conteúdo dessas questões e tente novamente!
+            </p>
+          </div>
+        `;
+      } else {
+        resultHtml += `
+          <p style="color: var(--success-text); font-weight: bold; margin: 1rem 0;">
+            🌟 Perfeito! Você acertou todas as questões!
+          </p>
+        `;
+      }
+
+      resultHtml += `
+          <p style="font-weight: 600; color: #334155; margin-top: 1rem;">
+            Mostre esta tela para a professora para comprovar a realização da atividade.
+          </p>
+          <div class="stamp">ATIVIDADE REGISTRADA</div>
+          <button class="retry-btn" onclick="restartQuiz()">🔄 Refazer Questionário</button>
+        </div>
+      `;
+
+      app.innerHTML = resultHtml;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function restartQuiz() {
+      userAnswers = {};
+      renderAllQuestions();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleFormula() {
+      const drawer = document.getElementById("formulaDrawer");
+      drawer.classList.toggle("open");
+    }
+
+    renderAllQuestions();
+  </script>
+</body>
+</html>
