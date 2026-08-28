@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disciplina de Gestão Industrial</title>
     
-    <!-- Fonte Inter e Ícones Lucide -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,6 +20,8 @@
             --text-muted: #94a3b8;
             --accent-green: #10b981;
             --accent-purple: #8b5cf6;
+            --accent-blue: #0284c7;
+            --accent-orange: #f97316;
         }
 
         * {
@@ -49,20 +50,6 @@
 
         .header {
             margin-bottom: 40px;
-        }
-
-        .header-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background-color: rgba(56, 189, 248, 0.1);
-            color: var(--primary);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 16px;
-            border: 1px solid rgba(56, 189, 248, 0.2);
         }
 
         h1 {
@@ -125,108 +112,14 @@
             color: var(--accent-green);
         }
 
-        .card-quiz .card-icon {
+        .card-estrategia .card-icon {
             background-color: rgba(139, 92, 246, 0.15);
             color: var(--accent-purple);
         }
 
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .card-demanda .card-icon {
+            background-color: rgba(2, 132, 199, 0.15);
+            color: var(--accent-blue);
         }
 
-        .card-description {
-            color: var(--text-muted);
-            font-size: 0.925rem;
-            line-height: 1.5;
-        }
-
-        .arrow-icon {
-            opacity: 0;
-            transform: translateX(-8px);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover .arrow-icon {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="header">
-            <div class="header-badge">
-                <i data-lucide="factory" size="16"></i>
-                Painel do Aluno / Gestor
-            </div>
-            <h1>Gestão Industrial</h1>
-            <p class="subtitle">Escolha um módulo abaixo para iniciar suas atividades:</p>
-        </div>
-
-        <div class="menu-grid">
-            <a href="./swot.html" class="card card-swot">
-                <div>
-                    <div class="card-icon">
-                        <i data-lucide="layout-grid" size="24"></i>
-                    </div>
-                    <div class="card-title">
-                        Análise SWOT
-                        <i data-lucide="arrow-right" class="arrow-icon" size="20"></i>
-                    </div>
-                    <p class="card-description">Mapeie Forças, Oportunidades, Fraquezas e Ameaças da operação.</p>
-                </div>
-            </a>
-
-            <a href="./estrategia.html" class="card card-quiz">
-                <div>
-                    <div class="card-icon">
-                        <i data-lucide="brain-circuit" size="24"></i>
-                    </div>
-                    <div class="card-title">
-                        Quiz - Estratégia
-                        <i data-lucide="arrow-right" class="arrow-icon" size="20"></i>
-                    </div>
-                    <p class="card-description">Teste seus conhecimentos sobre Estratégia de Produção e Operações.</p>
-                </div>
-            </a>
-
-                        <a href="./demanda.html" class="card card-demanda">
-                <div>
-                    <div class="card-icon">
-                        <i data-lucide="layout-grid" size="24"></i>
-                    </div>
-                    <div class="card-title">
-                        Previsão de Demanda
-                        <i data-lucide="arrow-right" class="arrow-icon" size="20"></i>
-                    </div>
-                    <p class="card-description">Exercícios sobre demanda</p>
-                </div>
-                             </a>
-
-                        <a href="./capacidade.html" class="card card-quiz">
-                <div>
-                    <div class="card-icon">
-                        <i data-lucide="brain-circuit" size="24"></i>
-                    </div>
-                    <div class="card-title">
-                        Capacidade produtiva
-                        <i data-lucide="arrow-right" class="arrow-icon" size="20"></i>
-                    </div>
-                    <p class="card-description">Exercícios sobre capacidade produtiva.</p>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    <!-- Inicialização dos Ícones -->
-    <script>
-        lucide.createIcons();
-    </script>
-</body>
-</html>
+        .card-capacidade .card-
