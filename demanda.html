@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Exercícios - Previsão de Demanda e Estudos de Caso</title>
+    <style>
+        :root {
+            --primary-color: #0d3b66;
+            --secondary-color: #005f73;
+            --accent-color: #0a9396;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --text-color: #1e293b;
+            --disabled-bg: #e2e8f0;
+            --success-color: #2e7d32;
+            --success-bg: #e8f5e9;
+            --error-color: #c62828;
+            --error-bg: #ffebee;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 10px;
+            margin-top: 30px;
+            font-size: 18px;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 15px;
+            margin-top: 20px;
+        }
+
+        .student-info {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group textarea {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input[readonly] {
+            background-color: var(--disabled-bg);
+            color: #64748b;
+        }
+
+        .alert-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffe3a3;
+            color: #856404;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 6px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+        th span.formula-hint {
+            display: block;
+            font-size: 10px;
+            font-weight: normal;
+            color: #e2e8f0;
+            margin-top: 2px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        td.disabled-cell {
+            background-color: var(--disabled-bg);
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            padding: 5px;
+            box-sizing: border-box;
+            font-size: 12px;
+            text-align: center;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        input.correct {
+            border: 2px solid var(--success-color) !important;
+            background-color: var(--success-bg) !important;
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        input.incorrect {
+            border: 2px solid var(--error-color) !important;
+            background-color: var(--error-bg) !important;
+            color: var(--error-color);
+            font-weight: bold;
+        }
+
+        .summary-row {
+            background-color: #e6fffa !important;
+            font-weight: bold;
+        }
+
+        .summary-row td {
+            border-top: 2px solid var(--accent-color);
+        }
+
+        .case-study {
+            background: #faf5ff;
+            border-left: 4px solid #805ad5;
+            padding: 15px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .case-study ul {
+            padding-left: 20px;
+        }
+
+        .formulas-container {
+            border: 1.5px solid var(--primary-color);
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #f8fafc;
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .formula-card {
+            border-right: 1px solid #cbd5e1;
+            padding-right: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .formula-card:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .formula-card h4 {
+            color: var(--primary-color);
+            font-size: 13px;
+            text-align: center;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+        }
+
+        .formula-box {
+            border: 1px solid #94a3b8;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+
+        .formula-legend {
+            font-size: 11px;
+            color: #334155;
+            line-height: 1.4;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-action {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-action:hover {
+            background-color: #005f73;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .btn-container {
+                display: none;
+            }
+
+            input, textarea {
+                border: none !important;
+                background: transparent !important;
+                resize: none;
+            }
+
+            .formulas-container {
+                border: 1px solid #000;
+            }
+
+            .case-study {
+                background: #f9f9f9;
+                border-left: 4px solid #666;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Lista de Exercícios: Gestão da Demanda e Previsão de Vendas</h1>
+    </header>
+
+    <div class="student-info">
+        <div class="form-group">
+            <label for="student-name">Nome do Aluno(a):</label>
+            <input type="text" id="student-name" placeholder="Digite seu nome completo aqui" style="text-align: left;">
+        </div>
+        <div class="form-group">
+            <label for="submission-date">Data de Realização:</label>
+            <input type="text" id="submission-date" readonly style="text-align: left;">
+        </div>
+    </div>
+
+    <section>
+        <h2>1. INDÚSTRIA DE ALIMENTOS – LANÇAMENTO DE UMA MARCA</h2>
+        
+        <div class="case-study">
+            <p>Esse caso trata do lançamento de uma nova marca, no mercado de pratos prontos congelados de uma grande empresa brasileira de alimentos. Essa indústria de alimentos há muito buscava uma inovação que movimentasse o seu mercado de produtos congelados – que eram os <em>cash cows</em> da Cia. Algumas inovações já haviam sido lançadas, porém sem movimentar os volumes de produção.</p>
+            
+            <p>Depois de muitas análises do mercado (pesquisa com consumidores e opinião da força de vendas) e estudos etnográficos com consumidores-alvo, a empresa decidiu lançar uma nova linha de pratos congelados focada no mercado de porções individuais de comida caseira. A construção do Business Case (o projeto de lançamento da nova linha) previa um crescimento gradativo de volume ao longo do ano 1 do projeto, e previa que essa nova linha atingisse, no ano 5, metade do volume da maior linha de congelados já existente no portfólio.</p>
+            
+            <p><strong>Os pilares do lançamento foram:</strong></p>
+            <ul>
+                <li>atendimento de necessidades dos consumidores solteiros que viviam sozinhos ou casais sem filhos – comida caseira a qualquer hora, em porções individuais;</li>
+                <li>receitas diferenciadas, para que suportassem o objetivo de entrega de comida caseira;</li>
+                <li>distribuição pulverizada, para atingir ao maior número possível de consumidores.</li>
+            </ul>
+            
+            <p>A nova linha teve tamanha aceitação dos consumidores que o volume de vendas previsto para o final do ano 1 foi atingido no 3º mês de vendas. O mercado de pratos prontos congelados saltou de um crescimento de 8 a 9%, ao ano, para 25%, no primeiro ano do lançamento. No ano 2, a nova linha já havia atingido o objetivo interno de ser metade do volume da maior linha de congelados do portfólio.</p>
+            
+            <p><strong>As previsões de demanda consideradas no Business Case tiveram de ser revistas já no mês 3 de seu lançamento, o que ocasionou:</strong></p>
+            <ul>
+                <li>Mudança na previsão de demanda de todo o Business Case, aumentando significativamente os volumes já para os anos 1 e 2.</li>
+                <li>Capacitação da planta produtiva para produzir somente a nova linha de produtos – foi necessário realizar um grande <em>delist</em> (retirada) de todos os outros pratos prontos existentes no portfólio, e que estavam na curva C de volumes, para a liberação da linha para os novos produtos.</li>
+                <li>Forte movimento em conjunto com toda a cadeia produtiva, para suprir rapidamente a planta com as matérias-primas necessárias para a produção.</li>
+            </ul>
+        </div>
+
+        <h3>Desafios no estudo de caso:</h3>
+        
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label>a) Como conseguir agregar esforços de todas as áreas da empresa e dos fornecedores para suprir a demanda não esperada e de tamanho sucesso desse lançamento?</label>
+            <textarea rows="4" placeholder="Digite sua resposta aqui..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>b) Quanto ainda esse mercado irá crescer nos próximos anos e como manter os consumidores fiéis a essa linha de produtos?</label>
+            <textarea rows="4" placeholder="Digite sua resposta aqui..."></textarea>
+        </div>
+    </section>
+
+    <div class="page-break"></div>
+
+    <section>
+        <h2>2. Previsão de Vendas - Fabricante de Produto Químico</h2>
+        <p>Uma empresa fabricante de um produto químico utilizado como matéria-prima na produção de produtos de limpeza deseja analisar o comportamento de suas vendas ao longo do ano de 2025. A quantidade vendida, em toneladas por mês, está apresentada no Quadro 1.</p>
+
+        <h3>Quadro 1 – Vendas mensais de 2025</h3>
+        <table style="max-width: 600px; margin: 10px auto 25px auto;">
+            <thead>
+                <tr>
+                    <th>Mês</th>
+                    <th>Vendas em 2025 (t)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Janeiro</td><td>520</td></tr>
+                <tr><td>Fevereiro</td><td>545</td></tr>
+                <tr><td>Março</td><td>530</td></tr>
+                <tr><td>Abril</td><td>555</td></tr>
+                <tr><td>Maio</td><td>540</td></tr>
+                <tr><td>Junho</td><td>525</td></tr>
+                <tr><td>Julho</td><td>550</td></tr>
+                <tr><td>Agosto</td><td>535</td></tr>
+                <tr><td>Setembro</td><td>560</td></tr>
+                <tr><td>Outubro</td><td>545</td></tr>
+                <tr><td>Novembro</td><td>555</td></tr>
+                <tr><td>Dezembro</td><td>570</td></tr>
+            </tbody>
+        </table>
+
+        <p>A empresa deseja avaliar diferentes métodos para realizar suas previsões de vendas. Para isso, serão utilizados dois métodos:</p>
+        <ul>
+            <li><strong>Média móvel de 4 períodos:</strong> considerando os quatro períodos imediatamente anteriores;</li>
+            <li><strong>Média simples:</strong> considerando a média de todos os períodos anteriores disponíveis.</li>
+        </ul>
+        <p>As previsões deverão ser calculadas para os meses de <strong>maio a dezembro de 2025</strong>.</p>
+
+        <div class="formulas-container">
+            <div class="formula-card">
+                <h4>DESVIO ABSOLUTO MÉDIO (DAM)</h4>
+                <div class="formula-box">
+                    DAM = &Sigma; |E<sub>t</sub>| / n
+                </div>
+                <div class="formula-legend">
+                    <strong>Onde:</strong><br>
+                    E<sub>t</sub> = erro no período t<br>
+                    n = número de períodos avaliados (n = 8)
+                </div>
+            </div>
+
+            <div class="formula-card">
+                <h4>ERRO QUADRÁTICO MÉDIO (EQM)</h4>
+                <div class="formula-box">
+                    EQM = &Sigma; E<sub>t</sub>² / n
+                </div>
+                <div class="formula-legend">
+                    <strong>Onde:</strong><br>
+                    E<sub>t</sub> = erro no período t<br>
+                    n = número de períodos avaliados (n = 8)
+                </div>
+            </div>
+
+            <div class="formula-card">
+                <h4>ERRO PERCENTUAL ABSOLUTO MÉDIO (EPAM)</h4>
+                <div class="formula-box">
+                    EPAM = &Sigma; (|E<sub>t</sub>| / A<sub>t</sub>) &times; 100 / n
+                </div>
+                <div class="formula-legend">
+                    <strong>Onde:</strong><br>
+                    E<sub>t</sub> = erro no período t<br>
+                    A<sub>t</sub> = vendas reais no período t<br>
+                    n = número de períodos avaliados (n = 8)
+                </div>
+            </div>
+        </div>
+
+        <div class="alert-box">
+            📌 ATENÇÃO: Preencha TODOS os campos das tabelas utilizando impreterivelmente 2 casas decimais (exemplo: 537,50 ou 17,50). Respostas sem 2 casas decimais serão consideradas incorretas.
+        </div>
+
+        <h3>Questões</h3>
+        <p><strong>a) Determine as previsões de vendas para os meses de maio a dezembro de 2025 e calcule os erros de previsão:</strong></p>
+
+        <!-- TABELA I - MÉDIA MÓVEL DE 4 PERÍODOS -->
+        <h4>I. Média móvel de 4 períodos</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Mês</th>
+                    <th>Vendas em 2025 (A<sub>t</sub>)</th>
+                    <th>Previsão MM(4)</th>
+                    <th>Erro (E<sub>t</sub>)<span class="formula-hint">(A<sub>t</sub> - F<sub>t</sub>)</span></th>
+                    <th>|E<sub>t</sub>|<span class="formula-hint">|A<sub>t</sub> - F<sub>t</sub>|</span></th>
+                    <th>E<sub>t</sub>²<span class="formula-hint">(E<sub>t</sub>)²</span></th>
+                    <th>Erro %<span class="formula-hint">(|E<sub>t</sub>| / A<sub>t</sub>) &times; 100</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Janeiro</td><td>520</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td></tr>
+                <tr><td>Fevereiro</td><td>545</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td></tr>
+                <tr><td>Março</td><td>530</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td></tr>
+                <tr><td>Abril</td><td>555</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td></tr>
+                <tr><td>Maio</td><td>540</td><td><input type="text" data-answer="537.50"></td><td><input type="text" data-answer="2.50"></td><td><input type="text" data-answer="2.50"></td><td><input type="text" data-answer="6.25"></td><td><input type="text" data-answer="0.46"></td></tr>
+                <tr><td>Junho</td><td>525</td><td><input type="text" data-answer="542.50"></td><td><input type="text" data-answer="-17.50"></td><td><input type="text" data-answer="17.50"></td><td><input type="text" data-answer="306.25"></td><td><input type="text" data-answer="3.33"></td></tr>
+                <tr><td>Julho</td><td>550</td><td><input type="text" data-answer="537.50"></td><td><input type="text" data-answer="12.50"></td><td><input type="text" data-answer="12.50"></td><td><input type="text" data-answer="156.25"></td><td><input type="text" data-answer="2.27"></td></tr>
+                <tr><td>Agosto</td><td>535</td><td><input type="text" data-answer="542.50"></td><td><input type="text" data-answer="-7.50"></td><td><input type="text" data-answer="7.50"></td><td><input type="text" data-answer="56.25"></td><td><input type="text" data-answer="1.40"></td></tr>
+                <tr><td>Setembro</td><td>560</td><td><input type="text" data-answer="537.50"></td><td><input type="text" data-answer="22.50"></td><td><input type="text" data-answer="22.50"></td><td><input type="text" data-answer="506.25"></td><td><input type="text" data-answer="4.02"></td></tr>
+                <tr><td>Outubro</td><td>545</td><td><input type="text" data-answer="542.50"></td><td><input type="text" data-answer="2.50"></td><td><input type="text" data-answer="2.50"></td><td><input type="text" data-answer="6.25"></td><td><input type="text" data-answer="0.46"></td></tr>
+                <tr><td>Novembro</td><td>555</td><td><input type="text" data-answer="547.50"></td><td><input type="text" data-answer="7.50"></td><td><input type="text" data-answer="7.50"></td><td><input type="text" data-answer="56.25"></td><td><input type="text" data-answer="1.35"></td></tr>
+                <tr><td>Dezembro</td><td>570</td><td><input type="text" data-answer="548.75"></td><td><input type="text" data-answer="21.25"></td><td><input type="text" data-answer="21.25"></td><td><input type="text" data-answer="451.56"></td><td><input type="text" data-answer="3.73"></td></tr>
+                <tr class="summary-row">
+                    <td colspan="4">RESULTADOS GERAIS:</td>
+                    <td>DAM = <input type="text" data-answer="11.72" style="width: 80%;"></td>
+                    <td>EQM = <input type="text" data-answer="193.16" style="width: 80%;"></td>
+                    <td>EPAM = <input type="text" data-answer="2.13" style="width: 80%;"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- TABELA II - MÉDIA SIMPLES -->
+        <h4>II. Média simples</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Mês</th>
+                    <th>Vendas em 2025 (A<sub>t</sub>)</th>
+                    <th>Previsão Média Simples</th>
+                    <th>Erro (E<sub>t</sub>)<span class="formula-hint">(A<sub>t</sub> - F<sub>t</sub>)</span></th>
+                    <th>|E<sub>t</sub>|<span class="formula-hint">|A<sub>t</sub> - F<sub>t</sub>|</span></th>
+                    <th>E<sub>t</sub>²<span class="formula-hint">(E<sub>t</sub>)²</span></th>
+                    <th>Erro %<span class="formula-hint">(|E<sub>t</sub>| / A<sub>t</sub>) &times; 100</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Janeiro</td><td>520</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td></tr>
+                <tr><td>Fevereiro</td><td>545</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td></tr>
+                <tr><td>Março</td><td>530</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td></tr>
+                <tr><td>Abril</td><td>555</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td><td class="disabled-cell">-</td></tr>
+                <tr><td>Maio</td><td>540</td><td><input type="text" data-answer="537.50"></td><td><input type="text" data-answer="2.50"></td><td><input type="text" data-answer="2.50"></td><td><input type="text" data-answer="6.25"></td><td><input type="text" data-answer="0.46"></td></tr>
+                <tr><td>Junho</td><td>525</td><td><input type="text" data-answer="538.00"></td><td><input type="text" data-answer="-13.00"></td><td><input type="text" data-answer="13.00"></td><td><input type="text" data-answer="169.00"></td><td><input type="text" data-answer="2.48"></td></tr>
+                <tr><td>Julho</td><td>550</td><td><input type="text" data-answer="535.83"></td><td><input type="text" data-answer="14.17"></td><td><input type="text" data-answer="14.17"></td><td><input type="text" data-answer="200.69"></td><td><input type="text" data-answer="2.58"></td></tr>
+                <tr><td>Agosto</td><td>535</td><td><input type="text" data-answer="537.86"></td><td><input type="text" data-answer="-2.86"></td><td><input type="text" data-answer="2.86"></td><td><input type="text" data-answer="8.16"></td><td><input type="text" data-answer="0.53"></td></tr>
+                <tr><td>Setembro</td><td>560</td><td><input type="text" data-answer="537.50"></td><td><input type="text" data-answer="22.50"></td><td><input type="text" data-answer="22.50"></td><td><input type="text" data-answer="506.25"></td><td><input type="text" data-answer="4.02"></td></tr>
+                <tr><td>Outubro</td><td>545</td><td><input type="text" data-answer="540.00"></td><td><input type="text" data-answer="5.00"></td><td><input type="text" data-answer="5.00"></td><td><input type="text" data-answer="25.00"></td><td><input type="text" data-answer="0.92"></td></tr>
+                <tr><td>Novembro</td><td>555</td><td><input type="text" data-answer="540.50"></td><td><input type="text" data-answer="14.50"></td><td><input type="text" data-answer="14.50"></td><td><input type="text" data-answer="210.25"></td><td><input type="text" data-answer="2.61"></td></tr>
+                <tr><td>Dezembro</td><td>570</td><td><input type="text" data-answer="541.82"></td><td><input type="text" data-answer="28.18"></td><td><input type="text" data-answer="28.18"></td><td><input type="text" data-answer="794.21"></td><td><input type="text" data-answer="4.94"></td></tr>
+                <tr class="summary-row">
+                    <td colspan="4">RESULTADOS GERAIS:</td>
+                    <td>DAM = <input type="text" data-answer="12.84" style="width: 80%;"></td>
+                    <td>EQM = <input type="text" data-answer="239.98" style="width: 80%;"></td>
+                    <td>EPAM = <input type="text" data-answer="2.32" style="width: 80%;"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 20px;"><strong>b) Compare os resultados dos dois métodos. Qual apresentou o menor DAM, EQM e EPAM? Com base nesses resultados, qual método você recomendaria à empresa? Justifique.</strong></p>
+        <div class="form-group">
+            <textarea rows="5" placeholder="Digite sua resposta aqui..."></textarea>
+        </div>
+    </section>
+
+    <div class="btn-container">
+        <button class="btn-action" onclick="validateAnswers()">Verificar Respostas</button>
+        <button class="btn-action" onclick="window.print()">Salvar / Imprimir em PDF</button>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const today = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        document.getElementById('submission-date').value = today.toLocaleDateString('pt-BR', options);
+
+        document.querySelectorAll('input[data-answer]').forEach(input => {
+            input.addEventListener('input', function() {
+                validateSingleInput(this);
+            });
+        });
+    });
+
+    function validateSingleInput(input) {
+        let rawVal = input.value.trim().replace('%', '');
+        
+        if (rawVal === '') {
+            input.classList.remove('correct', 'incorrect');
+            return;
+        }
+
+        // Normaliza para ponto
+        const normalizedVal = rawVal.replace(',', '.');
+        
+        // Verifica se tem exatamente duas casas decimais após o ponto/vírgula
+        const decimalRegex = /^-?\d+\.\d{2}$/;
+        const hasTwoDecimals = decimalRegex.test(normalizedVal);
+
+        const userVal = parseFloat(normalizedVal);
+        const targetVal = parseFloat(input.getAttribute('data-answer'));
+
+        // Só aceita se tiver o valor correto E a formatação estrita de 2 casas decimais
+        if (hasTwoDecimals && !isNaN(userVal) && Math.abs(userVal - targetVal) <= 0.05) {
+            input.classList.add('correct');
+            input.classList.remove('incorrect');
+        } else {
+            input.classList.add('incorrect');
+            input.classList.remove('correct');
+        }
+    }
+
+    function validateAnswers() {
+        document.querySelectorAll('input[data-answer]').forEach(input => {
+            validateSingleInput(input);
+        });
+    }
+</script>
+
+</body>
+</html>
