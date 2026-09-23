@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atividade de Gestão Industrial - Conceitos Básicos de Custos</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --success-bg: #f0fdf4;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: var(--text);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .student-info {
+            margin-bottom: 30px;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .student-info label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .student-info input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #ffffff;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .question-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            white-space: pre-line;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f5f9;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            padding: 12px 15px;
+            border-radius: 6px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #f8fafc;
+            border-color: var(--primary);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .option-btn.selected-correct {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success) !important;
+            color: var(--success) !important;
+            font-weight: 600;
+        }
+
+        .option-btn.selected-incorrect {
+            background-color: var(--danger-bg) !important;
+            border-color: var(--danger) !important;
+            color: var(--danger) !important;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .status-badge.correct {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .status-badge.incorrect {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .results-panel {
+            display: none;
+            background: #f8fafc;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .results-panel h2 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin: 15px 0;
+        }
+
+        .restart-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-top: 15px;
+        }
+
+        .restart-btn:hover {
+            background: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Exercícios selecionados – Conceitos Básicos de Custos</h1>
+        <div class="subtitle">Disciplina Gestão Industrial – Prof Amanda Martin</div>
+    </header>
+
+    <div class="student-info">
+        <label for="studentName">Nome Completo</label>
+        <input type="text" id="studentName" placeholder="Digite seu nome aqui...">
+    </div>
+
+    <div id="quiz-container"></div>
+
+    <div id="results-panel" class="results-panel">
+        <h2>Resultado do Desempenho</h2>
+        <p id="result-name" style="font-weight: 600; font-size: 1.1rem;"></p>
+        <div class="score-display" id="score-percentage">0%</div>
+        <p id="score-details" style="color: var(--text-muted);"></p>
+        <button class="restart-btn" onclick="resetQuiz()">Refazer Atividade</button>
+    </div>
+</div>
+
+<script>
+const quizData = [
+    {
+        id: 1,
+        title: "(Eletrobrás/Contador_UFRJ_adaptado) O único valor considerado como custo na contabilidade de custos de empresa manufatureira é o recurso aplicado em:",
+        options: [
+            { text: "a) propaganda", correct: false },
+            { text: "b) comissões de vendas", correct: false },
+            { text: "c) depreciação de automóvel do presidente da empresa", correct: false },
+            { text: "d) seguro da fábrica", correct: true },
+            { text: "e) dividendos pagos", correct: false }
+        ]
+    },
+    {
+        id: 2,
+        title: "(Exame de Suficiência/CFC) Os recursos consumidos direta ou indiretamente para obtenção de receitas, os recursos consumidos na produção de outros bens e serviços e os recursos consumidos de forma anormal e involuntária são classificados, respectivamente, como:",
+        options: [
+            { text: "a) custos, custos, despesas.", correct: false },
+            { text: "b) custos, despesas, perdas.", correct: false },
+            { text: "c) despesas, custos e perdas.", correct: true },
+            { text: "d) despesas, despesas, custos.", correct: false }
+        ]
+    },
+    {
+        id: 3,
+        title: "De acordo com terminologia pertinente à contabilidade de custos, assinale a alternativa que contém apenas custos de produção:",
+        options: [
+            { text: "a) Seguro contra incêndio da fábrica, depreciação dos computadores do escritório, salário da mão de obra produtiva.", correct: false },
+            { text: "b) Gastos com vendas, depreciação do prédio administrativo, graxa utilizada para manutenção dos equipamentos da produção", correct: false },
+            { text: "c) Salário da mão de obra produtiva, seguro contra incêndio da fábrica, matéria-prima consumida.", correct: true },
+            { text: "d) Mão de obra consumida, comissões de vendedores, energia elétrica gasta com as máquinas da produção.", correct: false },
+            { text: "e) Comissão de vendedores, impostos sobre vendas, materiais de embalagens.", correct: false }
+        ]
+    },
+    {
+        id: 4,
+        title: "(Exame de Suficiência/CFC) Relacione o termo descrito na primeira coluna com os conceitos na segunda coluna e, em seguida, assinale a opção CORRETA.\n\n(1) Gasto\n(2) Investimento\n(3) Custo\n(4) Despesa\n\n( ) Gasto relativo a bem ou serviço utilizado na produção de outros bens ou serviços.\n( ) Sacrifício financeiro que a entidade arca para a obtenção de um produto ou serviço qualquer, reconhecimento esse representado por entrega ou promessa de entrega de ativos.\n( ) Bens ou serviços consumidos direta ou indiretamente para obtenção de receitas.\n( ) Aquisição de bens ou serviços que são estocados nos ativos da empresa para baixa ou amortização quando de sua venda, de seu consumo, de seu desaparecimento ou de sua desvalorização.\n\nA sequência CORRETA é:",
+        options: [
+            { text: "a) 1, 3, 4, 2.", correct: false },
+            { text: "b) 2, 1, 4, 3.", correct: false },
+            { text: "c) 3, 1, 4, 2.", correct: true },
+            { text: "d) 4, 1, 3, 2.", correct: false }
+        ]
+    },
+    {
+        id: 5,
+        title: "(CFC/Exame de Suficiência) Uma Sociedade empresária apresentou os seguintes gastos mensais:\n\nAquisição de matéria-prima no período .......... R$ 25.000,00\nComissão de vendedores pela venda de produtos no mês ....... R$ 5.000,00\nTributos sobre o lucro ........................................ R$ 2.000,00\nImobilizado adquirido a prazo .............................. R$ 60.000,00\n\nConsiderando-se as terminologias utilizadas em custos, assinale a opção CORRETA.",
+        options: [
+            { text: "a) O total dos investimentos é de R$ 60.000,00, e o total das despesas é de R$ 32.000,00.", correct: false },
+            { text: "b) O total dos investimentos é de R$ 60.000,00, o total dos custos é de R$ 25.000,00, e o total das despesas é de R$ 7.000,00.", correct: false },
+            { text: "c) O total dos investimentos é de R$ 85.000,00, e o total das despesas é de R$ 7.000,00.", correct: true },
+            { text: "d) O total dos investimentos é de R$ 85.000,00, e o total dos custos é de R$ 2.000,00; e o total das despesas é de R$ 5.000,00.", correct: false }
+        ]
+    },
+    {
+        id: 6,
+        title: "(TRE_PA/Analista_Judiciário_FCC) Em uma empresa de saneamento básico, um item considerado como custo do produto é:",
+        options: [
+            { text: "a) depreciação dos equipamentos usados no tratamento da água.", correct: true },
+            { text: "b) compra de matéria-prima.", correct: false },
+            { text: "c) aquisição de máquinas e equipamentos.", correct: false },
+            { text: "d) baixa de produto químico do estoque por deterioração.", correct: false },
+            { text: "e) pagamento de salários e encargos do pessoal da área administrativa.", correct: false }
+        ]
+    },
+    {
+        id: 7,
+        title: "(BR Distribuidora/Contador_Cesgranrio) Associe os tipos de custos da 1ª coluna às características apresentadas na 2ª.\n\nCustos\n1 - fixos\n2 - variáveis\n3 - semivariáveis\n4 - indiretos\n5 - diretos\n\nCaracterísticas\n( ) Permitem uma associação objetiva e imediata aos produtos.\n( ) Necessitam, para sua associação aos produtos, de um processo de rateio.\n( ) São inteiramente sensíveis às alterações nos volumes de produção e vendas.\n( ) Comportam-se de maneira uniforme, qualquer que seja o volume de produção e vendas, quando apresentados na base unitária.\n( ) Comportam-se de maneira flutuante, em função das alterações do volume de produção e vendas, quando apresentados na base unitária.\n( ) Variam em função de alterações do volume de produção e vendas, mas não de maneira direta e proporcionalmente.\n\nA ordem correta nos números da 2ª coluna, de cima para baixo, é:",
+        options: [
+            { text: "a) 1 - 5 - 2 - 2 - 3 - 2", correct: false },
+            { text: "b) 2 - 5 - 2 - 3 - 1 - 2", correct: false },
+            { text: "c) 4 - 4 - 2 - 1 - 2 - 3", correct: false },
+            { text: "d) 5 - 4 - 1 - 2 - 1 - 3", correct: false },
+            { text: "e) 5 - 4 - 2 - 2 - 1 - 3", correct: true }
+        ]
+    },
+    {
+        id: 8,
+        title: "(Exame de Suficiência/CFC, adaptada) Relacione o tipo de custo descrito na primeira coluna com os conceitos apresentados na segunda coluna e, em seguida, assinale a opção CORRETA.\n\n(1) Custo fixo\n(2) Custo variável\n(3) Custo direto\n(4) Custo indireto\n\n( ) São custos de natureza mais genérica, não sendo possível identificar imediatamente com parte do custo de determinado produto.\n( ) Um custo uniforme por unidade, mas que varia no total na proporção direta das variações da atividade total ou do volume da produção relacionado.\n( ) Um custo que, em determinado período e volume de produção, não se altera em seu valor total, mas vai ficando cada vez menor em termos unitários à medida que o volume de produção aumenta.\n( ) São custos incorridos em determinado produto, que permitem a associação objetiva e imediata.\n\nA sequência CORRETA é:",
+        options: [
+            { text: "a) 2, 4, 1, 3.", correct: false },
+            { text: "b) 2, 4, 3, 1.", correct: false },
+            { text: "c) 4, 2, 1, 3.", correct: true },
+            { text: "d) 4, 2, 3, 1.", correct: false }
+        ]
+    },
+    {
+        id: 9,
+        title: "(Exame de Suficiência/CFC) Uma empresa industrial apresentou os seguintes dados em determinado mês, a saber:\n\nCusto Fixo Total (CF) = $ 100,00.\nCusto Variável Unitário (CVu) = $ 20,00.\n\nSabe-se que o Custo Médio (CM) é obtido somando-se o Custo Fixo Unitário (CFu) ao Custo Variável Unitário (CVu). Com base nessas informações disponibilizadas e considerando que a entidade produziu um único tipo de produto, assinale a alternativa correspondente ao Custo Médio (CM) quando a quantidade produzida era igual a 2, 4 e 5 unidades, respectivamente:",
+        options: [
+            { text: "a) $ 60,00, $53,33 e$ 35,00.", correct: false },
+            { text: "b) $ 60,00, $53,33 e$ 40,00.", correct: false },
+            { text: "c) $ 70,00, $45,00 e$ 40,00.", correct: true },
+            { text: "d) $ 70,00, $45,00 e$ 35,00.", correct: false }
+        ]
+    },
+    {
+        id: 10,
+        title: "(Exame de Suficiência/CFC) Uma indústria que fabrica três modelos de mesas apresentou, em um determinado período, os saldos de custos e despesas abaixo:\n\nAluguel do escritório de vendas.................................. R$ 38.400,00\nComissões sobre vendas........................................... R$ 192.000,00\nDepreciação de máquinas utilizadas na decoração dos produtos A, B e C.... R$ 89.600,00\nICMS sobre vendas.................................................. R$ 384.000,00\nMão de obra direta............................................... R$ 140.800,00\nMão de obra indireta............................................. R$ 102.400,00\nMaterial de embalagem utilizado na produção...................... R$ 25.600,00\nMatéria-prima consumida pelo produto A............................ R$ 345.000,00\nGastos gerais de fabricação...................................... R$ 76.800,00\nSalário dos vendedores........................................... R$ 12.800,00\n\nCom base nos saldos acima, assinale a opção que apresenta o valor dos custos diretos.",
+        options: [
+            { text: "a) R$ 511.400,00.", correct: true },
+            { text: "b) R$ 575.400,00.", correct: false },
+            { text: "c) R$ 677.800,00.", correct: false },
+            { text: "d) R$ 780.200,00.", correct: false }
+        ]
+    },
+    {
+        id: 11,
+        title: "(Exame de Suficiência/CFC, adaptada) Uma empresa fabrica e vende dois produtos, A e B. Durante o mês de fevereiro de 20x3, o departamento fabril reportou para a contabilidade o seguinte relatório da produção:",
+        tableHtml: `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Itens de custo</th>
+                        <th>Produto A</th>
+                        <th>Produto B</th>
+                        <th>Valor total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Matéria-prima consumida</td>
+                        <td>R$ 1.800,00</td>
+                        <td>R$ 1.200,00</td>
+                        <td>R$ 3.000,00</td>
+                    </tr>
+                    <tr>
+                        <td>Mão de obra direta</td>
+                        <td>R$ 1.000,00</td>
+                        <td>R$ 1.000,00</td>
+                        <td>R$ 2.000,00</td>
+                    </tr>
+                    <tr>
+                        <td>Unidades produzidas no período</td>
+                        <td>4.000 un.</td>
+                        <td>12.000 un.</td>
+                        <td>16.000 un.</td>
+                    </tr>
+                    <tr>
+                        <td>Custos indiretos de fabricação</td>
+                        <td></td>
+                        <td></td>
+                        <td>R$ 10.000,00</td>
+                    </tr>
+                </tbody>
+            </table>
+        `,
+        extraText: "No referido mês, não havia saldos iniciais e finais de produtos em elaboração.\nA empresa utiliza, como base de rateio dos custos indiretos de fabricação, o valor da matéria prima consumida para cada produto.\nCom base nos dados acima, é correto afirmar que o custo total do produto A, no mês, é de:",
+        options: [
+            { text: "a) R$ 8.800,00", correct: a_is_correct = true },
+            { text: "b) R$ 8.400,00", correct: false },
+            { text: "c) R$ 7.800,00", correct: false },
+            { text: "d) R$ 5.300,00", correct: false }
+        ]
+    },
+    {
+        id: 12,
+        title: "Dados para as questões de números 12 e 13.\n(Petrobras/Contador_Cesgranrio, adaptada) A Indústria Real tem uma linha de produção de três modelos de um de seus produtos, em que são consumidos R$900.000,00 de custos indiretos fixos.\nA linha de produção apresentou a seguinte informação de período produtivo:",
+        tableHtml: `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Modelos do Produto</th>
+                        <th>Produção unidades</th>
+                        <th>Matéria-prima por unidade</th>
+                        <th>Mão de obra direta por unidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Pequeno</td>
+                        <td>15.000</td>
+                        <td>R$ 25,00</td>
+                        <td>R$ 12,00</td>
+                    </tr>
+                    <tr>
+                        <td>Médio</td>
+                        <td>25.000</td>
+                        <td>R$ 27,00</td>
+                        <td>R$ 16,00</td>
+                    </tr>
+                    <tr>
+                        <td>Grande</td>
+                        <td>10.000</td>
+                        <td>R$ 28,00</td>
+                        <td>R$ 22,00</td>
+                    </tr>
+                </tbody>
+            </table>
+        `,
+        extraText: "Sabendo-se que a Indústria Real processa o rateio dos custos fixos pelo custo total de mão de obra direta, o valor dos custos fixos totais, alocado ao modelo grande, é:",
+        options: [
+            { text: "a) 180.000,00", correct: false },
+            { text: "b) 247.500,00", correct: true },
+            { text: "c) 315.000,00", correct: false },
+            { text: "d) 342.000,00", correct: false },
+            { text: "e) 396.000,00", correct: false }
+        ]
+    },
+    {
+        id: 13,
+        title: "Admita que a Indústria Real venda o modelo médio do produto por R$ 110,00. Mantendo o mesmo critério de rateio do custo fixo totais pelo custo Total de MOD, o lucro por unidade do modelo médio, em reais, seria:",
+        options: [
+            { text: "a) 49,00", correct: true },
+            { text: "b) 54,85", correct: false },
+            { text: "c) 55,48", correct: false },
+            { text: "d) 61,00", correct: false },
+            { text: "e) 67,00", correct: false }
+        ]
+    },
+    {
+        id: 14,
+        title: "(Exame de Suficiência/CFC, adaptada) Uma empresa tem um custo fixo mensal de aproximadamente no montante de R$ 297.000,00. No mês de julho de 20x3, produziu 99.000 unidades de seu produto, incorrendo em R$ 693.000,00 de custo variável. Considerando, alternativamente, uma produção de 74.250 unidades, o custo unitário da produção seria de:",
+        options: [
+            { text: "a) R$ 10,00", correct: false },
+            { text: "b) R$ 11,00", correct: true },
+            { text: "c) R$ 12,33", correct: false },
+            { text: "d) R$ 13,33", correct: false },
+            { text: "e) R$ 450.000,00", correct: false }
+        ]
+    },
+    {
+        id: 15,
+        title: "(SEFAZ/ICMS RJ_FCC) A empresa Predileta S.A., ao analisar os custos do produto Predileto, obteve as seguintes informações:",
+        tableHtml: `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Custo</th>
+                        <th>Quantidade produzida</th>
+                        <th>Custo unitário</th>
+                        <th>Custo total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="3">Custo A</td>
+                        <td>1.000 unidades</td>
+                        <td>R$ 10,00</td>
+                        <td>R$ 10.000,00</td>
+                    </tr>
+                    <tr>
+                        <td>2.000 unidades</td>
+                        <td>R$ 5,00</td>
+                        <td>R$ 10.000,00</td>
+                    </tr>
+                    <tr>
+                        <td>2.500 unidades</td>
+                        <td>R$ 4,00</td>
+                        <td>R$ 10.000,00</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3">Custo B</td>
+                        <td>1.000 unidades</td>
+                        <td>R$ 4,00</td>
+                        <td>R$ 4.000,00</td>
+                    </tr>
+                    <tr>
+                        <td>2.000 unidades</td>
+                        <td>R$ 4,00</td>
+                        <td>R$ 8.000,00</td>
+                    </tr>
+                    <tr>
+                        <td>2.500 unidades</td>
+                        <td>R$ 4,00</td>
+                        <td>R$ 10.000,00</td>
+                    </tr>
+                </tbody>
+            </table>
+        `,
+        extraText: "Com base nas informações obtidas, é possível afirmar que os custos A e B são, em relação à unidade do produto Predileto:",
+        options: [
+            { text: "a) fixo e fixo.", correct: false },
+            { text: "b) indireto e fixo.", correct: false },
+            { text: "c) variável e fixo.", correct: false },
+            { text: "d) fixo e variável.", correct: true },
+            { text: "e) variável e indireto.", correct: false }
+        ]
+    }
+];
+
+let userAnswers = {};
+
+function renderQuiz() {
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = '';
+
+    quizData.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+
+        let html = `<div class="question-title">${index + 1}. ${q.title}</div>`;
+
+        if (q.tableHtml) {
+            html += `<div class="table-container">${q.tableHtml}</div>`;
+        }
+
+        if (q.extraText) {
+            html += `<div class="question-title" style="margin-top: 10px;">${q.extraText}</div>`;
+        }
+
+        html += `<div class="options-list" id="options-q${q.id}">`;
+
+        q.options.forEach((opt, optIndex) => {
+            html += `
+                <button class="option-btn" 
+                        onclick="selectOption(${q.id}, ${optIndex})" 
+                        id="btn-q${q.id}-opt${optIndex}">
+                    <span>${opt.text}</span>
+                    <span class="badge-container"></span>
+                </button>
+            `;
+        });
+
+        html += `</div>`;
+        card.innerHTML = html;
+        container.appendChild(card);
+    });
+}
+
+function selectOption(questionId, optionIndex) {
+    if (userAnswers[questionId] !== undefined) return;
+
+    userAnswers[questionId] = optionIndex;
+
+    const question = quizData.find(q => q.id === questionId);
+    const selectedOpt = question.options[optionIndex];
+    const isCorrect = selectedOpt.correct;
+
+    const optionsContainer = document.getElementById(`options-q${questionId}`);
+    const buttons = optionsContainer.querySelectorAll('.option-btn');
+
+    buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === optionIndex) {
+            const badge = btn.querySelector('.badge-container');
+            if (isCorrect) {
+                btn.classList.add('selected-correct');
+                badge.innerHTML = `<span class="status-badge correct">Certo</span>`;
+            } else {
+                btn.classList.add('selected-incorrect');
+                badge.innerHTML = `<span class="status-badge incorrect">Errado</span>`;
+            }
+        }
+    });
+
+    checkCompletion();
+}
+
+function checkCompletion() {
+    if (Object.keys(userAnswers).length === quizData.length) {
+        showResults();
+    }
+}
+
+function showResults() {
+    let score = 0;
+    quizData.forEach(q => {
+        const selectedIndex = userAnswers[q.id];
+        if (selectedIndex !== undefined && q.options[selectedIndex].correct) {
+            score++;
+        }
+    });
+
+    const percentage = Math.round((score / quizData.length) * 100);
+    const nameInput = document.getElementById('studentName').value.trim();
+
+    document.getElementById('result-name').innerText = nameInput ? `Aluno(a): ${nameInput}` : '';
+    document.getElementById('score-percentage').innerText = `${percentage}%`;
+    document.getElementById('score-details').innerText = `Você acertou ${score} de ${quizData.length} questões.`;
+
+    const resultsPanel = document.getElementById('results-panel');
+    resultsPanel.style.display = 'block';
+    resultsPanel.scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetQuiz() {
+    userAnswers = {};
+    document.getElementById('results-panel').style.display = 'none';
+    renderQuiz();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+renderQuiz();
+</script>
+
+</body>
+</html>
