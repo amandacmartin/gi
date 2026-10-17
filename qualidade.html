@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atividade Prática Integrada: Ferramentas da Qualidade</title>
+    <!-- Chart.js para o gráfico de Pareto -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #2563eb;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #334155;
+            --border: #cbd5e1;
+            --success: #16a34a;
+            --error: #dc2626;
+            --warning: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .info-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-field label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        input[type="number"], input[type="text"], select, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background-color: #fff;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .input-correct {
+            border-color: var(--success) !important;
+            background-color: #f0fdf4 !important;
+        }
+
+        .input-incorrect {
+            border-color: var(--error) !important;
+            background-color: #fef2f2 !important;
+        }
+
+        .feedback-tag {
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 4px;
+            display: block;
+        }
+        .feedback-tag.correct { color: var(--success); }
+        .feedback-tag.incorrect { color: var(--error); }
+
+        .grid-6m {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .m-item {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .m-item label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--secondary);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .gut-score {
+            font-weight: bold;
+            text-align: center;
+            background-color: #f8fafc;
+        }
+
+        .gut-top {
+            background-color: #fef9c3 !important;
+            color: #854d0e;
+            font-weight: bold;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        #result-summary {
+            display: none;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .summary-success {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .summary-partial {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+                max-width: 100%;
+            }
+            header {
+                box-shadow: none;
+                background: #1e3a8a !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print, .actions {
+                display: none !important;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                break-inside: avoid;
+                margin-bottom: 12px;
+                padding: 12px;
+            }
+            input, select, textarea {
+                border: 1px solid #999 !important;
+                background: transparent !important;
+                appearance: none;
+                -webkit-appearance: none;
+            }
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 8px; }
+            header { padding: 16px; border-radius: 8px; }
+            header h1 { font-size: 1.3rem; }
+            .card { padding: 14px; border-radius: 8px; }
+            .btn { width: 100%; }
+            .chart-container { height: 280px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Atividade Prática Integrada: Ferramentas da Qualidade</h1>
+        <p>Análise de Pareto, Diagrama de Ishikawa (6Ms), Matriz GUT e Plano de Ação 5W2H</p>
+    </header>
+
+    <!-- Identificação Única da Equipe/Aluno -->
+    <div class="card">
+        <h2>👥 Identificação da Equipe / Aluno</h2>
+        <div class="student-info">
+            <div class="info-field" style="grid-column: span 2;">
+                <label for="group_members">Nome do Aluno ou Integrantes da Equipe:</label>
+                <input type="text" id="group_members" placeholder="Digite o nome completo do aluno ou dos integrantes...">
+            </div>
+            <div class="info-field">
+                <label for="group_class">Turma / Turno:</label>
+                <input type="text" id="group_class" placeholder="Ex: Téc. Mecânica / Gestão - Noite">
+            </div>
+            <div class="info-field">
+                <label for="group_date">Data:</label>
+                <input type="text" id="group_date">
+            </div>
+        </div>
+    </div>
+
+    <!-- PARTE 1: PARETO E ISHIKAWA -->
+    <div class="card">
+        <h2>📋 Cenário 1 e Dados Coletados (Setor de Usinagem CNC)</h2>
+        <p style="margin-bottom: 12px;">
+            A equipe de manutenção registrou durante 1 mês o histórico de paradas não programadas em um torno CNC. 
+            A Folha de Verificação do setor registrou os seguintes dados:
+        </p>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Evento / Tipo de Falha</th>
+                        <th style="width: 200px; text-align: center;">Frequência (Ocorrências no Mês)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Vazamento de fluido refrigerante / óleo hidráulico</td><td style="text-align: center; font-weight: bold;">12</td></tr>
+                    <tr><td>Desgaste / Quebra de ferramenta de corte (inserto)</td><td style="text-align: center; font-weight: bold;">68</td></tr>
+                    <tr><td>Erro de parâmetro de corte / programação CNC</td><td style="text-align: center; font-weight: bold;">18</td></tr>
+                    <tr><td>Peça fora da tolerância dimensional especificada</td><td style="text-align: center; font-weight: bold;">34</td></tr>
+                    <tr><td>Falha no sensor pneumático de fixação da placa</td><td style="text-align: center; font-weight: bold;">6</td></tr>
+                    <tr><td>Sujeira / cavaco acumulado no barramento do torno</td><td style="text-align: center; font-weight: bold;">122</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Questão 1: Ishikawa -->
+    <div class="card">
+        <h2>1️⃣ Classificação nos 6Ms (Diagrama de Ishikawa)</h2>
+        <p style="margin-bottom: 16px; font-size: 0.9rem; color: #475569;">
+            Classifique cada falha em um dos eixos dos 6Ms: <b>Mão de Obra, Método, Matéria-Prima, Máquina, Meio Ambiente ou Medida</b>.
+        </p>
+        <div class="grid-6m">
+            <div class="m-item">
+                <label for="q1_1">Sujeira / cavaco acumulado:</label>
+                <select id="q1_1">
+                    <option value="">-- Selecione --</option>
+                    <option value="Meio Ambiente">Meio Ambiente</option>
+                    <option value="Máquina">Máquina</option>
+                    <option value="Mão de Obra">Mão de Obra</option>
+                    <option value="Matéria-Prima">Matéria-Prima</option>
+                    <option value="Medida">Medida</option>
+                    <option value="Método">Método</option>
+                </select>
+                <span id="fb_q1_1" class="feedback-tag"></span>
+            </div>
+
+            <div class="m-item">
+                <label for="q1_2">Desgaste / quebra de ferramenta:</label>
+                <select id="q1_2">
+                    <option value="">-- Selecione --</option>
+                    <option value="Máquina">Máquina</option>
+                    <option value="Mão de Obra">Mão de Obra</option>
+                    <option value="Meio Ambiente">Meio Ambiente</option>
+                    <option value="Medida">Medida</option>
+                    <option value="Método">Método</option>
+                    <option value="Matéria-Prima">Matéria-Prima</option>
+                </select>
+                <span id="fb_q1_2" class="feedback-tag"></span>
+            </div>
+
+            <div class="m-item">
+                <label for="q1_3">Peça fora da tolerância:</label>
+                <select id="q1_3">
+                    <option value="">-- Selecione --</option>
+                    <option value="Medida">Medida</option>
+                    <option value="Mão de Obra">Mão de Obra</option>
+                    <option value="Meio Ambiente">Meio Ambiente</option>
+                    <option value="Matéria-Prima">Matéria-Prima</option>
+                    <option value="Método">Método</option>
+                    <option value="Máquina">Máquina</option>
+                </select>
+                <span id="fb_q1_3" class="feedback-tag"></span>
+            </div>
+
+            <div class="m-item">
+                <label for="q1_4">Erro de parâmetro / programação:</label>
+                <select id="q1_4">
+                    <option value="">-- Selecione --</option>
+                    <option value="Mão de Obra">Mão de Obra</option>
+                    <option value="Método">Método</option>
+                    <option value="Máquina">Máquina</option>
+                    <option value="Meio Ambiente">Meio Ambiente</option>
+                    <option value="Matéria-Prima">Matéria-Prima</option>
+                    <option value="Medida">Medida</option>
+                </select>
+                <span id="fb_q1_4" class="feedback-tag"></span>
+            </div>
+
+            <div class="m-item">
+                <label for="q1_5">Vazamento de fluido / óleo:</label>
+                <select id="q1_5">
+                    <option value="">-- Selecione --</option>
+                    <option value="Máquina">Máquina</option>
+                    <option value="Mão de Obra">Mão de Obra</option>
+                    <option value="Meio Ambiente">Meio Ambiente</option>
+                    <option value="Matéria-Prima">Matéria-Prima</option>
+                    <option value="Medida">Medida</option>
+                    <option value="Método">Método</option>
+                </select>
+                <span id="fb_q1_5" class="feedback-tag"></span>
+            </div>
+
+            <div class="m-item">
+                <label for="q1_6">Falha no sensor pneumático:</label>
+                <select id="q1_6">
+                    <option value="">-- Selecione --</option>
+                    <option value="Máquina">Máquina</option>
+                    <option value="Mão de Obra">Mão de Obra</option>
+                    <option value="Meio Ambiente">Meio Ambiente</option>
+                    <option value="Matéria-Prima">Matéria-Prima</option>
+                    <option value="Medida">Medida</option>
+                    <option value="Método">Método</option>
+                </select>
+                <span id="fb_q1_6" class="feedback-tag"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questão 2: Tabela de Pareto -->
+    <div class="card">
+        <h2>2️⃣ Construção da Tabela de Pareto</h2>
+        <p style="margin-bottom: 12px; font-size: 0.9rem; color: #475569;">
+            <b>a)</b> Reordene as falhas em ordem decrescente.<br>
+            <b>b)</b> Calcule o % Unitário (em relação ao total de 260 ocorrências).<br>
+            <b>c)</b> Calcule o % Acumulado.
+        </p>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px; text-align: center;">Pos</th>
+                        <th>Causa / Falha</th>
+                        <th style="width: 110px;">Ocorrências</th>
+                        <th style="width: 120px;">% Unitário</th>
+                        <th style="width: 120px;">% Acumulado</th>
+                    </tr>
+                </thead>
+                <tbody id="pareto-table-body">
+                </tbody>
+            </table>
+        </div>
+        <button class="btn btn-secondary no-print" onclick="updateChartFromInputs()" style="margin-top: 10px; font-size: 0.85rem; padding: 8px 16px;">
+            📊 Gerar / Atualizar Gráfico de Pareto
+        </button>
+    </div>
+
+    <!-- Gráfico de Pareto -->
+    <div class="card">
+        <h2>📊 Gráfico de Pareto (Visualização)</h2>
+        <div class="chart-container">
+            <canvas id="paretoChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Questão 3: Análise 80/20 -->
+    <div class="card">
+        <h2>3️⃣ Análise de Pareto & Tomada de Decisão (Princípio 80/20)</h2>
+        <div style="margin-bottom: 16px;">
+            <p><b>A) Quais são os "Poucos Vitais" que correspondem a aproximadamente 80% dos problemas?</b></p>
+            <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+                <label><input type="radio" name="q3_a" value="1"> Apenas "Sujeira / cavaco acumulado"</label>
+                <label><input type="radio" name="q3_a" value="2"> "Sujeira/cavaco acumulado" + "Desgaste/quebra de ferramenta"</label>
+                <label><input type="radio" name="q3_a" value="3"> "Peça fora da tolerância" + "Erro de parâmetro"</label>
+                <label><input type="radio" name="q3_a" value="4"> Todas as 6 causas de forma igual</label>
+            </div>
+            <span id="fb_q3_a" class="feedback-tag"></span>
+        </div>
+
+        <div>
+            <p><b>B) Qual deve ser a prioridade imediata da equipe para reduzir drasticamente as paradas?</b></p>
+            <textarea id="q3_b" rows="3" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.9rem;" placeholder="Escreva aqui a sua recomendação técnica para a equipe de manutenção..."></textarea>
+            <span id="fb_q3_b" class="feedback-tag"></span>
+        </div>
+    </div>
+
+    <!-- PARTE 2: MATRIZ GUT E PLANO DE AÇÃO 5W2H -->
+    <div class="card">
+        <h2>📋 Cenário 2: Priorização e Plano de Ação (Setor de Corte de Chapas Metálicas)</h2>
+        <p style="font-size: 0.9rem; color: #475569;">
+            Nesta segunda etapa, identifique 5 potenciais problemas no setor de corte de chapas metálicas, aplique a Matriz GUT para priorizá-los e elabore um Plano de Ação 5W2H para o problema mais crítico.
+        </p>
+    </div>
+
+    <!-- Etapa 4 e 5: Identificação de Problemas + Matriz GUT -->
+    <div class="card">
+        <h2>4️⃣ Identificação de Problemas & 5️⃣ Matriz GUT</h2>
+        <p style="font-size: 0.85rem; color: #475569; margin-bottom: 12px;">
+            Identifique 5 potenciais problemas no setor de corte de chapas metálicas e atribua notas de 1 a 5 para Gravidade (G), Urgência (U) e Tendência (T).
+        </p>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 35px; text-align: center;">#</th>
+                        <th>Descrição do Problema Identificado</th>
+                        <th style="width: 90px; text-align: center;">Gravidade (1-5)</th>
+                        <th style="width: 90px; text-align: center;">Urgência (1-5)</th>
+                        <th style="width: 90px; text-align: center;">Tendência (1-5)</th>
+                        <th style="width: 100px; text-align: center;">Pontuação (G×U×T)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <script>
+                        for (let i = 1; i <= 5; i++) {
+                            document.write(`
+                                <tr>
+                                    <td style="text-align: center; font-weight: bold;">${i}</td>
+                                    <td>
+                                        <input type="text" id="prob_${i}" placeholder="Descreva o problema ${i}..." oninput="updateGUT()">
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <select id="g_${i}" onchange="updateGUT()">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <select id="u_${i}" onchange="updateGUT()">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <select id="t_${i}" onchange="updateGUT()">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </td>
+                                    <td id="score_${i}" class="gut-score">1</td>
+                                </tr>
+                            `);
+                        }
+                    </script>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Etapa 6: Plano de Ação 5W2H -->
+    <div class="card">
+        <h2>6️⃣ Plano de Ação 5W2H (Problema Prioritário)</h2>
+        <div style="margin-bottom: 12px; padding: 10px; background: #e0f2fe; border-radius: 6px; font-size: 0.9rem;">
+            <b>Problema Mais Crítico (Maior GUT):</b> <span id="top_problem_display" style="font-weight: bold; color: #0369a1;">Preencha os problemas acima...</span>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30px; text-align: center;">Item</th>
+                        <th style="width: 15%;">O que? (What)</th>
+                        <th style="width: 14%;">Por que? (Why)</th>
+                        <th style="width: 13%;">Onde? (Where)</th>
+                        <th style="width: 13%;">Quando? (When)</th>
+                        <th style="width: 13%;">Quem? (Who)</th>
+                        <th style="width: 16%;">Como? (How)</th>
+                        <th style="width: 14%;">Quanto custa? (How much)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <script>
+                        for (let j = 1; j <= 3; j++) {
+                            document.write(`
+                                <tr>
+                                    <td style="text-align: center; font-weight: bold;">${j}</td>
+                                    <td><textarea id="w_what_${j}" rows="3" placeholder="Ação ${j}..."></textarea></td>
+                                    <td><textarea id="w_why_${j}" rows="3" placeholder="Justificativa..."></textarea></td>
+                                    <td><textarea id="w_where_${j}" rows="3" placeholder="Local..."></textarea></td>
+                                    <td><textarea id="w_when_${j}" rows="3" placeholder="Prazo..."></textarea></td>
+                                    <td><textarea id="w_who_${j}" rows="3" placeholder="Responsável..."></textarea></td>
+                                    <td><textarea id="w_how_${j}" rows="3" placeholder="Método / Etapas..."></textarea></td>
+                                    <td><textarea id="w_howmuch_${j}" rows="3" placeholder="Custo estimado..."></textarea></td>
+                                </tr>
+                            `);
+                        }
+                    </script>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Resumo dos Resultados / Feedback Geral -->
+    <div id="result-summary"></div>
+
+    <!-- Botões de Ação -->
+    <div class="card no-print">
+        <div class="actions">
+            <button class="btn btn-secondary" onclick="resetForm()">🔄 Limpar Formulário</button>
+            <button class="btn btn-success" onclick="validateAnswers()">✅ Validar Respostas Parte 1</button>
+            <button class="btn btn-primary" onclick="savePDF()">🖨️ Salvar como PDF / Imprimir</button>
+        </div>
+    </div>
+
+    <script>
+        let myChart = null;
+
+        // Tabela inicial de Pareto
+        const initialParetoData = [
+            { id: 1, name: "Sujeira / cavaco acumulado no barramento do torno", count: 122 },
+            { id: 2, name: "Desgaste / Quebra de ferramenta de corte (inserto)", count: 68 },
+            { id: 3, name: "Peça fora da tolerância dimensional especificada", count: 34 },
+            { id: 4, name: "Erro de parâmetro de corte / programação CNC", count: 18 },
+            { id: 5, name: "Vazamento de fluido refrigerante / óleo hidráulico", count: 12 },
+            { id: 6, name: "Falha no sensor pneumático de fixação da placa", count: 6 }
+        ];
+
+        function initParetoTable() {
+            const tbody = document.getElementById('pareto-table-body');
+            tbody.innerHTML = '';
+            initialParetoData.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align: center; font-weight: bold;">${index + 1}º</td>
+                    <td>
+                        <select id="p_cause_${index}">
+                            <option value="">-- Selecione a falha --</option>
+                            <option value="Sujeira / cavaco acumulado no barramento do torno">Sujeira / cavaco acumulado no barramento do torno</option>
+                            <option value="Desgaste / Quebra de ferramenta de corte (inserto)">Desgaste / Quebra de ferramenta de corte (inserto)</option>
+                            <option value="Peça fora da tolerância dimensional especificada">Peça fora da tolerância dimensional especificada</option>
+                            <option value="Erro de parâmetro de corte / programação CNC">Erro de parâmetro de corte / programação CNC</option>
+                            <option value="Vazamento de fluido refrigerante / óleo hidráulico">Vazamento de fluido refrigerante / óleo hidráulico</option>
+                            <option value="Falha no sensor pneumático de fixação da placa">Falha no sensor pneumático de fixação da placa</option>
+                        </select>
+                    </td>
+                    <td><input type="number" id="p_count_${index}" placeholder="Ex: 122"></td>
+                    <td><input type="number" step="0.1" id="p_unit_${index}" placeholder="Ex: 46.9">%</td>
+                    <td><input type="number" step="0.1" id="p_accum_${index}" placeholder="Ex: 46.9">%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Data atual automática
+        function setTodayDate() {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            document.getElementById('group_date').value = `${dd}/${mm}/${yyyy}`;
+        }
+
+        // Recalcular GUT e destacar o maior
+        function updateGUT() {
+            let maxScore = -1;
+            let maxIndex = 1;
+
+            for (let i = 1; i <= 5; i++) {
+                const g = parseInt(document.getElementById(`g_${i}`).value) || 1;
+                const u = parseInt(document.getElementById(`u_${i}`).value) || 1;
+                const t = parseInt(document.getElementById(`t_${i}`).value) || 1;
+                
+                const score = g * u * t;
+                const scoreCell = document.getElementById(`score_${i}`);
+                scoreCell.innerText = score;
+                scoreCell.classList.remove('gut-top');
+
+                if (score > maxScore) {
+                    maxScore = score;
+                    maxIndex = i;
+                }
+            }
+
+            // Destacar a maior pontuação
+            const topProbInput = document.getElementById(`prob_${maxIndex}`);
+            const topProbText = topProbInput ? topProbInput.value.trim() : '';
+            const topCell = document.getElementById(`score_${maxIndex}`);
+            if (topCell) topCell.classList.add('gut-top');
+
+            const display = document.getElementById('top_problem_display');
+            if (display) {
+                if (topProbText !== '') {
+                    display.innerText = `${topProbText} (Pontuação GUT: ${maxScore})`;
+                } else {
+                    display.innerText = `Problema #${maxIndex} (Pontuação GUT: ${maxScore})`;
+                }
+            }
+        }
+
+        // Renderizar/Atualizar Gráfico Chart.js
+        function updateChartFromInputs() {
+            const labels = [];
+            const dataCounts = [];
+            const dataAccum = [];
+
+            let total = 0;
+            for (let i = 0; i < 6; i++) {
+                const countVal = parseFloat(document.getElementById(`p_count_${i}`).value) || 0;
+                total += countVal;
+            }
+
+            let runningTotal = 0;
+            for (let i = 0; i < 6; i++) {
+                const causeSelect = document.getElementById(`p_cause_${i}`);
+                const causeVal = causeSelect ? causeSelect.value : `Item ${i+1}`;
+                const countVal = parseFloat(document.getElementById(`p_count_${i}`).value) || 0;
+                
+                runningTotal += countVal;
+                const accumVal = total > 0 ? (runningTotal / total) * 100 : 0;
+
+                // Cortar nomes muito longos no eixo X
+                const shortLabel = causeVal.length > 25 ? causeVal.substring(0, 22) + '...' : causeVal;
+                labels.push(shortLabel || `Item ${i+1}`);
+                dataCounts.push(countVal);
+                dataAccum.push(accumVal.toFixed(1));
+            }
+
+            const ctx = document.getElementById('paretoChart').getContext('2d');
+            
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Ocorrências (Barras)',
+                            data: dataCounts,
+                            backgroundColor: 'rgba(37, 99, 235, 0.7)',
+                            borderColor: 'rgba(37, 99, 235, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '% Acumulado (Linha)',
+                            data: dataAccum,
+                            type: 'line',
+                            borderColor: '#dc2626',
+                            backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#dc2626',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Frequência de Ocorrências' },
+                            beginAtZero: true
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: '% Acumulado' },
+                            min: 0,
+                            max: 100,
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Validação da Parte 1
+        function validateAnswers() {
+            let totalPoints = 0;
+            let maxPoints = 0;
+
+            // 1. Validação Ishikawa (6Ms)
+            const ishikawaAnswers = {
+                'q1_1': ['Meio Ambiente', 'Método'],
+                'q1_2': ['Máquina', 'Matéria-Prima'],
+                'q1_3': ['Medida', 'Máquina'],
+                'q1_4': ['Mão de Obra', 'Método'],
+                'q1_5': ['Máquina'],
+                'q1_6': ['Máquina']
+            };
+
+            for (let id in ishikawaAnswers) {
+                maxPoints++;
+                const select = document.getElementById(id);
+                const fb = document.getElementById(`fb_${id}`);
+                const val = select.value;
+
+                if (ishikawaAnswers[id].includes(val)) {
+                    totalPoints++;
+                    select.className = 'input-correct';
+                    fb.className = 'feedback-tag correct';
+                    fb.innerText = '✓ Correto!';
+                } else {
+                    select.className = 'input-incorrect';
+                    fb.className = 'feedback-tag incorrect';
+                    fb.innerText = `✗ Incorreto. Esperado: ${ishikawaAnswers[id].join(' ou ')}`;
+                }
+            }
+
+            // 2. Validação Tabela Pareto
+            const expectedPareto = [
+                { cause: "Sujeira / cavaco acumulado no barramento do torno", count: 122, unit: 46.9, accum: 46.9 },
+                { cause: "Desgaste / Quebra de ferramenta de corte (inserto)", count: 68, unit: 26.2, accum: 73.1 },
+                { cause: "Peça fora da tolerância dimensional especificada", count: 34, unit: 13.1, accum: 86.2 },
+                { cause: "Erro de parâmetro de corte / programação CNC", count: 18, unit: 6.9, accum: 93.1 },
+                { cause: "Vazamento de fluido refrigerante / óleo hidráulico", count: 12, unit: 4.6, accum: 97.7 },
+                { cause: "Falha no sensor pneumático de fixação da placa", count: 6, unit: 2.3, accum: 100.0 }
+            ];
+
+            expectedPareto.forEach((exp, idx) => {
+                maxPoints += 4; // Causa, Contagem, Unitario, Acumulado
+                
+                const elCause = document.getElementById(`p_cause_${idx}`);
+                const elCount = document.getElementById(`p_count_${idx}`);
+                const elUnit = document.getElementById(`p_unit_${idx}`);
+                const elAccum = document.getElementById(`p_accum_${idx}`);
+
+                // Causa
+                if (elCause.value === exp.cause) { totalPoints++; elCause.className = 'input-correct'; }
+                else { elCause.className = 'input-incorrect'; }
+
+                // Ocorrências
+                if (parseFloat(elCount.value) === exp.count) { totalPoints++; elCount.className = 'input-correct'; }
+                else { elCount.className = 'input-incorrect'; }
+
+                // Unitário (tolerância +-0.5)
+                const valUnit = parseFloat(elUnit.value) || 0;
+                if (Math.abs(valUnit - exp.unit) <= 0.5) { totalPoints++; elUnit.className = 'input-correct'; }
+                else { elUnit.className = 'input-incorrect'; }
+
+                // Acumulado (tolerância +-0.5)
+                const valAccum = parseFloat(elAccum.value) || 0;
+                if (Math.abs(valAccum - exp.accum) <= 0.5) { totalPoints++; elAccum.className = 'input-correct'; }
+                else { elAccum.className = 'input-incorrect'; }
+            });
+
+            // 3. Validação Análise 80/20
+            maxPoints++;
+            const q3aSelected = document.querySelector('input[name="q3_a"]:checked');
+            const fbQ3a = document.getElementById('fb_q3_a');
+            if (q3aSelected && q3aSelected.value === '2') {
+                totalPoints++;
+                fbQ3a.className = 'feedback-tag correct';
+                fbQ3a.innerText = '✓ Correto! As duas primeiras causas somam ~73.1% das ocorrências.';
+            } else {
+                fbQ3a.className = 'feedback-tag incorrect';
+                fbQ3a.innerText = '✗ Incorreto. A opção correta é "Sujeira/cavaco" + "Desgaste/quebra".';
+            }
+
+            maxPoints++;
+            const q3bVal = document.getElementById('q3_b').value.trim();
+            const fbQ3b = document.getElementById('fb_q3_b');
+            if (q3bVal.length > 10) {
+                totalPoints++;
+                fbQ3b.className = 'feedback-tag correct';
+                fbQ3b.innerText = '✓ Análise registrada com sucesso.';
+            } else {
+                fbQ3b.className = 'feedback-tag incorrect';
+                fbQ3b.innerText = '✗ Por favor, elabore melhor a sua justificativa/recomendação.';
+            }
+
+            // Exibir Resumo do Desempenho
+            const summaryDiv = document.getElementById('result-summary');
+            summaryDiv.style.display = 'block';
+            const percentage = ((totalPoints / maxPoints) * 100).toFixed(1);
+
+            if (percentage >= 80) {
+                summaryDiv.className = 'summary-success';
+                summaryDiv.innerHTML = `🎉 Excelente desempenho! Você acertou ${totalPoints} de ${maxPoints} itens (${percentage}%). Seus cálculos e classificações estão corretos.`;
+            } else {
+                summaryDiv.className = 'summary-partial';
+                summaryDiv.innerHTML = `⚠️ Atenção: Você obteve ${totalPoints} de ${maxPoints} pontos (${percentage}%). Revise os campos destacados em vermelho.`;
+            }
+
+            updateChartFromInputs();
+        }
+
+        // Salvar PDF / Imprimir
+        function savePDF() {
+            const members = document.getElementById('group_members').value.trim();
+            if (!members) {
+                alert("Por favor, preencha o nome dos integrantes do grupo / aluno antes de salvar o PDF.");
+                document.getElementById('group_members').focus();
+                return;
+            }
+            window.print();
+        }
+
+        // Limpar Tudo
+        function resetForm() {
+            if (confirm("Tem certeza que deseja limpar todos os campos preenchidos?")) {
+                document.querySelectorAll('input, select, textarea').forEach(el => {
+                    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                    else if (el.type === 'radio') el.checked = false;
+                    else el.value = '';
+                    el.classList.remove('input-correct', 'input-incorrect');
+                });
+
+                document.querySelectorAll('.feedback-tag').forEach(el => el.innerText = '');
+
+                const summaryDiv = document.getElementById('result-summary');
+                summaryDiv.style.display = 'none';
+
+                setTodayDate();
+                updateGUT();
+                updateChartFromInputs();
+            }
+        }
+
+        window.onload = function() {
+            setTodayDate();
+            initParetoTable();
+            updateGUT();
+            updateChartFromInputs();
+        };
+    </script>
+</body>
+</html>
