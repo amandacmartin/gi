@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estudo de Caso & Fixação — Liderança e Motivação (Engenharia Mecânica)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#035485',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #334155;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .textarea-print-fallback {
+      display: none;
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 1.4cm;
+      }
+
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 10.5pt;
+        padding: 0 !important;
+      }
+
+      .no-print, button, #top-header, #tab-indicator, #parte1, .word-counter {
+        display: none !important;
+      }
+
+      #parte2 {
+        display: block !important;
+      }
+
+      .container-main {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+
+      .card-box {
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        margin-bottom: 14px !important;
+      }
+
+      textarea.custom-textarea {
+        display: none !important;
+      }
+
+      .textarea-print-fallback {
+        display: block !important;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        min-height: 70px;
+        border: 1px dashed #94a3b8;
+        padding: 9px;
+        background-color: #fafafa !important;
+        border-radius: 6px;
+        font-size: 10pt;
+        line-height: 1.45;
+      }
+
+      .print-page-break {
+        page-break-before: always;
+      }
+
+      .sigaa-alert {
+        border: 2px solid #0284c7 !important;
+        background-color: #f0f7ff !important;
+        color: #075985 !important;
+      }
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen pb-16">
+
+  <!-- Barra Superior Fixa -->
+  <header id="top-header" class="no-print bg-slate-900 text-white sticky top-0 z-50 shadow-md border-b border-slate-700">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <i class="fa-solid fa-gears text-amber-500 text-2xl"></i>
+        <div>
+          <h1 class="font-bold text-base md:text-lg leading-tight">Engenharia Mecânica — Gestão de Pessoas</h1>
+          <p class="text-xs text-slate-400">Atividade Integrada: Liderança e Motivação Industrial</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <button onclick="limparRespostas()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-600 hover:bg-slate-800 text-slate-300 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-rotate-left"></i> Reiniciar
+        </button>
+        <button id="btnTopPDF" onclick="exportarPDF()" class="hidden px-4 py-2 text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white rounded-lg shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-file-pdf text-sm"></i> Salvar / Exportar PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Barra de Progresso -->
+    <div class="w-full bg-slate-800 h-1.5">
+      <div id="progressBar" class="bg-amber-500 h-1.5 transition-all duration-300" style="width: 0%"></div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 container-main">
+
+    <!-- Cabeçalho Acadêmico e Identificação -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6 card-box">
+      <div class="border-b border-slate-200 pb-4 mb-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-50 text-brand-700 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+            <i class="fa-solid fa-graduation-cap"></i> Graduação em Engenharia Mecânica
+          </div>
+          <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">LIDERANÇA & MOTIVAÇÃO</h1>
+          <p class="text-sm text-slate-600 font-medium">Teoria e Aplicação Prática na Engenharia de Manufatura e Manutenção</p>
+        </div>
+        <div class="text-left md:text-right">
+          <span class="text-xs text-slate-500 font-medium">Data de Realização:</span>
+          <input type="text" id="dataAtividade" readonly class="mt-1 block bg-slate-100 border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-700 cursor-not-allowed focus:outline-none select-none">
+        </div>
+      </div>
+
+      <!-- Dados da Equipe -->
+      <div>
+        <label for="nomeEquipe" class="block text-sm font-bold text-slate-700 mb-1">
+          <i class="fa-solid fa-users text-brand-600 mr-1"></i> Nome da Equipe / Integrantes *:
+        </label>
+        <textarea id="nomeEquipe" rows="2" placeholder="Ex: Grupo 02 — Lucas Almeida, Mariana Costa e Pedro Henrique..."
+          class="custom-textarea w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+          oninput="atualizarRespostasImpressao('nomeEquipe')"></textarea>
+        <div id="nomeEquipe-print" class="textarea-print-fallback"></div>
+      </div>
+
+      <!-- Badges das teorias de apoio -->
+      <div class="mt-5 bg-slate-50 rounded-lg p-4 border border-slate-200 no-print">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2 mb-3">
+          <i class="fa-solid fa-circle-info text-brand-600"></i> Conceitos Mobilizados na Atividade:
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div class="bg-white border border-slate-200 rounded-md p-2 text-center text-xs font-semibold text-slate-700 shadow-sm">
+            <i class="fa-solid fa-layer-group text-indigo-600 mb-1 block text-sm"></i> Maslow & Herzberg
+          </div>
+          <div class="bg-white border border-slate-200 rounded-md p-2 text-center text-xs font-semibold text-slate-700 shadow-sm">
+            <i class="fa-solid fa-bullseye text-emerald-600 mb-1 block text-sm"></i> McClelland & Ciclo
+          </div>
+          <div class="bg-white border border-slate-200 rounded-md p-2 text-center text-xs font-semibold text-slate-700 shadow-sm">
+            <i class="fa-solid fa-brain text-purple-600 mb-1 block text-sm"></i> Teoria X / Y & Estilos
+          </div>
+          <div class="bg-white border border-slate-200 rounded-md p-2 text-center text-xs font-semibold text-slate-700 shadow-sm">
+            <i class="fa-solid fa-sliders text-amber-600 mb-1 block text-sm"></i> Situacional & Grade
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicador de Etapas -->
+    <div id="tab-indicator" class="no-print flex rounded-xl overflow-hidden border border-slate-200 bg-white mb-6 shadow-sm text-xs md:text-sm font-semibold text-center">
+      <div id="tab1" class="flex-1 py-3.5 px-4 bg-brand-50 text-brand-700 border-b-2 border-brand-600 flex items-center justify-center gap-2">
+        <span class="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs font-bold">1</span>
+        Parte 1: Questões Objetivas (6 Questões)
+      </div>
+      <div id="tab2" class="flex-1 py-3.5 px-4 text-slate-400 bg-slate-50 flex items-center justify-center gap-2">
+        <span class="w-6 h-6 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-bold">2</span>
+        Parte 2: Estudo de Caso Integrado
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- PARTE 1: 6 QUESTÕES OBJETIVAS (4 ALTERNATIVAS CADA)       -->
+    <!-- ========================================================= -->
+    <section id="parte1" class="space-y-5">
+      <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+        <p class="text-xs md:text-sm text-amber-900">
+          <strong>Atenção:</strong> Preencham a identificação da equipe e respondam corretamente às <strong>6 questões objetivas</strong> para liberar a etapa do Estudo de Caso.
+        </p>
+      </div>
+
+      <div id="mensagemErroP1" class="hidden bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm font-medium"></div>
+
+      <!-- Questão 1 (Ciclo Motivacional) -->
+      <div id="box-q1" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <p class="font-semibold text-slate-900 text-sm md:text-base">1. (Ciclo Motivacional) Durante o desenvolvimento de um dispositivo mecânico, um engenheiro propõe melhorias de projeto, mas enfrenta bloqueios constantes da supervisão sem justificativa técnica. Segundo a dinâmica do ciclo motivacional, o que ocorre quando a satisfação de uma necessidade encontra uma barreira?</p>
+        <div class="space-y-2 text-xs md:text-sm">
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="a" class="mt-1"> a) A necessidade é anulada imediatamente e o profissional retorna ao estado de equilíbrio.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="b" class="mt-1"> b) Ocorrem frustração, conflito ou estresse, fazendo com que o estado de tensão permaneça ou aumente.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="c" class="mt-1"> c) O nível de motivação estabiliza-se como um traço de personalidade fixo.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="d" class="mt-1"> d) O indivíduo atinge a autorrealização automaticamente pela superação.</label>
+        </div>
+      </div>
+
+      <!-- Questão 2 (Herzberg) -->
+      <div id="box-q2" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <p class="font-semibold text-slate-900 text-sm md:text-base">2. (Teoria dos Dois Fatores de Herzberg) Na gestão de uma equipe de Engenharia de Processos e Manutenção, aspectos ligados ao contexto do trabalho — tais como salário, climatização e condições físicas da oficina — são classificados como:</p>
+        <div class="space-y-2 text-xs md:text-sm">
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q2" value="a" class="mt-1"> a) Fatores Motivacionais, pois são os únicos capazes de gerar satisfação profunda no cargo.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q2" value="b" class="mt-1"> b) Fatores Higiênicos, que quando adequados evitam a insatisfação, mas quando precários causam insatisfação.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q2" value="c" class="mt-1"> c) Fatores de Autorrealização, focados estritamente na autonomia dos projetos.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q2" value="d" class="mt-1"> d) Fatores de Afiliação, focados apenas no relacionamento social com a gerência.</label>
+        </div>
+      </div>
+
+      <!-- Questão 3 (McClelland) -->
+      <div id="box-q3" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <p class="font-semibold text-slate-900 text-sm md:text-base">3. (Teoria das Necessidades Adquiridas de McClelland) Um engenheiro mecânico demonstra forte impulso para otimizar o OEE (Eficiência Global dos Equipamentos), superar metas de redução de refugo e buscar excelência técnica em relação a padrões desafiadores. Como é definida essa necessidade?</p>
+        <div class="space-y-2 text-xs md:text-sm">
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q3" value="a" class="mt-1"> a) Necessidade de Afiliação (manter relacionamentos interpessoais amigáveis e próximos).</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q3" value="b" class="mt-1"> b) Necessidade de Poder (controlar ou influenciar o comportamento de outras pessoas).</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q3" value="c" class="mt-1"> c) Necessidade de Realização (busca pela excelência, superação de padrões e luta pelo sucesso).</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q3" value="d" class="mt-1"> d) Necessidade de Segurança (proteção física contra falhas mecânicas na planta).</label>
+        </div>
+      </div>
+
+      <!-- Questão 4 (Teoria X e Y) -->
+      <div id="box-q4" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <p class="font-semibold text-slate-900 text-sm md:text-base">4. (Teoria X e Y de McGregor) Um gerente de produção metalúrgica acredita que os operadores e técnicos mecânicos evitam responsabilidades e só cumprem os procedimentos de setup sob vigilância rígida e ameaça de punição. Esse gestor atua sob a premissa da:</p>
+        <div class="space-y-2 text-xs md:text-sm">
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q4" value="a" class="mt-1"> a) Teoria X, fundamentada na desconfiança, controle rígido e visão tradicional de aversão ao trabalho.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q4" value="b" class="mt-1"> b) Teoria Y, baseada na administração por objetivos, autonomia e estímulo à iniciativa.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q4" value="c" class="mt-1"> c) Liderança Liberal (Laissez-Faire), deixando a equipe sem direção.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q4" value="d" class="mt-1"> d) Liderança Democrática, construída por consenso coletivo.</label>
+        </div>
+      </div>
+
+      <!-- Questão 5 (Liderança Situacional) -->
+      <div id="box-q5" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <p class="font-semibold text-slate-900 text-sm md:text-base">5. (Liderança Situacional) Ao integrar um engenheiro trainee recém-formado (alta motivação, mas pouca experiência prática em programação CNC e toleranciamento geométrico GD&T), qual comportamento o engenheiro coordenador deve adotar inicialmente?</p>
+        <div class="space-y-2 text-xs md:text-sm">
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q5" value="a" class="mt-1"> a) Delegação total (baixa orientação para tarefa e baixo apoio), deixando-o aprender sozinho.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q5" value="b" class="mt-1"> b) Alta orientação para a tarefa (instruções claras de procedimento) combinada com apoio e acompanhamento técnico.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q5" value="c" class="mt-1"> c) Postura estritamente Laissez-Faire para estimular a descoberta por tentativa e erro.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q5" value="d" class="mt-1"> d) Cobrança exclusivamente autocrática com advertências a cada erro de tolerância.</label>
+        </div>
+      </div>
+
+      <!-- Questão 6 (Grade Gerencial) -->
+      <div id="box-q6" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <p class="font-semibold text-slate-900 text-sm md:text-base">6. (Grade Gerencial de Blake & Mouton) Na Grade Gerencial, o estilo considerado mais eficaz para o Engenheiro Mecânico liderar uma planta industrial — conciliando alto rigor técnico/metas de produtividade com o desenvolvimento e bem-estar da equipe — é o:</p>
+        <div class="space-y-2 text-xs md:text-sm">
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q6" value="a" class="mt-1"> a) Estilo 9,1 (Autoridade-Obediência): preocupação máxima com produção e mínima com pessoas.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q6" value="b" class="mt-1"> b) Estilo 1,9 (Clube Campestre): preocupação máxima com pessoas e mínima com resultados técnicos.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q6" value="c" class="mt-1"> c) Estilo 1,1 (Gerência Empobrecida): esforço mínimo tanto para produção quanto para pessoas.</label>
+          <label class="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"><input type="radio" name="q6" value="d" class="mt-1"> d) Estilo 9,9 (Gerência em Equipe): alta preocupação simultânea com resultados operacionais e com as pessoas.</label>
+        </div>
+      </div>
+
+      <button onclick="validarParte1()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-md flex items-center justify-center gap-2 text-sm md:text-base">
+        Verificar Respostas e Avançar para o Estudo de Caso
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- PARTE 2: ESTUDO DE CASO INTEGRADO (SÍNTESE DOS ORIGINAIS) -->
+    <!-- ========================================================= -->
+    <section id="parte2" class="hidden space-y-6">
+
+      <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg no-print flex items-center justify-between gap-4">
+        <p class="text-xs md:text-sm text-emerald-900">
+          <strong>Parabéns!</strong> Vocês acertaram todas as questões objetivas. Analisem o cenário industrial abaixo e respondam às questões de <strong>Liderança</strong> e <strong>Motivação</strong>.
+        </p>
+        <button onclick="voltarParte1()" class="text-xs font-bold text-emerald-800 underline hover:text-emerald-950 whitespace-nowrap">
+          Rever Parte 1
+        </button>
+      </div>
+
+      <!-- Cenário Industrial -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 card-box">
+        <div class="flex items-center gap-3 border-b border-slate-200 pb-3 mb-4">
+          <div class="bg-amber-100 p-2.5 rounded-lg text-amber-700">
+            <i class="fa-solid fa-industry text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900 uppercase tracking-wide">O Cenário Industrial</h2>
+            <p class="text-xs font-semibold text-amber-700">Setor de Usinagem CNC e Manutenção — Indústria Metalmecânica</p>
+          </div>
+        </div>
+
+        <p class="text-xs md:text-sm text-slate-700 mb-4 leading-relaxed">
+          Vocês foram contratados como <strong>Engenheiros Mecânicos Coordenadores</strong> para reorganizar o setor de usinagem de precisão de uma grande indústria metalmecânica que enfrenta queda de produtividade, alto índice de retrabalho e conflitos internos. O diagnóstico atual do setor apresenta quatro pontos críticos:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-slate-50 border-l-4 border-red-500 rounded-r-lg p-4 text-xs md:text-sm text-slate-700">
+            <div class="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
+              <i class="fa-solid fa-user-shield text-red-500"></i> 1. Gerência de Produção Autoritária
+            </div>
+            <p>Atua sob forte cobrança de prazos e acredita que operadores e técnicos só trabalham se forem vigiados de perto e ameaçados com advertências.</p>
+          </div>
+
+          <div class="bg-slate-50 border-l-4 border-amber-500 rounded-r-lg p-4 text-xs md:text-sm text-slate-700">
+            <div class="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
+              <i class="fa-solid fa-wrench text-amber-500"></i> 2. Equipe Mista (Veteranos x Trainees)
+            </div>
+            <p><strong>Operadores veteranos</strong> recusam-se a seguir as novas folhas de processo otimizadas em CAM, alegando que atrasam a meta; já os <strong>trainees novos</strong> são motivados, mas erram por falta de experiência prática e têm receio de perguntar.</p>
+          </div>
+
+          <div class="bg-red-50 border-l-4 border-red-600 rounded-r-lg p-4 text-xs md:text-sm text-red-900">
+            <div class="font-bold text-red-950 mb-1 flex items-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation text-red-600"></i> 3. Quebra de Máquina & Barreira ao Relato
+            </div>
+            <p>Na semana passada, ocorreu a quebra do eixo-árvore (spindle) de um centro de usinagem devido a uma fixação improvisada ("gambiarra") feita para não parar a linha. Dias antes, um operador alertou sobre vibração anormal, mas foi repreendido pela chefia e passou a trabalhar com apatia.</p>
+          </div>
+
+          <div class="bg-slate-50 border-l-4 border-indigo-500 rounded-r-lg p-4 text-xs md:text-sm text-slate-700">
+            <div class="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
+              <i class="fa-solid fa-coins text-indigo-500"></i> 4. Bônus Frustrado & Grupo Kaizen/TPM
+            </div>
+            <p>A fábrica criou um bônus financeiro por produção, mas o engajamento continuou baixo devido às máquinas desreguladas. Para montar um Grupo de Melhoria Contínua (Kaizen / CCQ) focado na redução de refugo e setup, vocês têm 3 perfis: <strong>Colaborador A</strong> (harmonia e integração), <strong>Colaborador B</strong> (foco em metas e excelência técnica) e <strong>Colaborador C</strong> (oratória e influência).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOCO A: QUESTÕES DE LIDERANÇA -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 card-box space-y-5">
+        <div class="flex items-center gap-2 font-bold text-slate-900 text-base md:text-lg border-b border-slate-100 pb-3">
+          <span class="bg-brand-600 text-white w-7 h-7 rounded-full inline-flex items-center justify-center text-sm">A</span>
+          <h3>Análise de Liderança na Engenharia</h3>
+        </div>
+
+        <!-- L1 -->
+        <div>
+          <label class="block text-xs md:text-sm font-bold text-slate-800 mb-2">
+            1. (Teoria X/Y e Grade Gerencial) Que problemas a gestão autoritária (Teoria X) traz para a confiabilidade mecânica e segurança da fábrica, e como a engenharia pode propor uma atuação equilibrada entre metas e pessoas (Teoria Y)?
+          </label>
+          <textarea id="q_lid1" rows="3" placeholder="Escreva a resposta fundamentada..."
+            class="custom-textarea w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+            oninput="atualizarRespostasImpressao('q_lid1')"></textarea>
+          <div id="q_lid1-print" class="textarea-print-fallback"></div>
+          <div class="word-counter no-print text-right text-xs text-slate-400 mt-1"><span id="q_lid1-count">0</span> palavras</div>
+        </div>
+
+        <!-- L2 -->
+        <div>
+          <label class="block text-xs md:text-sm font-bold text-slate-800 mb-2">
+            2. (Estilos Clássicos de Liderança) Diante da quebra emergencial do centro de usinagem, qual estilo de liderança (Autocrático, Democrático ou Liberal) deve ser adotado no momento da crise, e qual estilo deve ser usado depois para revisar as folhas de processo com a equipe? Justifique.
+          </label>
+          <textarea id="q_lid2" rows="3" placeholder="Escreva a resposta fundamentada..."
+            class="custom-textarea w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+            oninput="atualizarRespostasImpressao('q_lid2')"></textarea>
+          <div id="q_lid2-print" class="textarea-print-fallback"></div>
+          <div class="word-counter no-print text-right text-xs text-slate-400 mt-1"><span id="q_lid2-count">0</span> palavras</div>
+        </div>
+
+        <!-- L3 -->
+        <div>
+          <label class="block text-xs md:text-sm font-bold text-slate-800 mb-2">
+            3. (Liderança Situacional) Como o Engenheiro Coordenador deve adaptar sua postura de liderança para conduzir de forma distinta o operador veterano resistente ao CAM e o trainee motivado, porém inexperiente?
+          </label>
+          <textarea id="q_lid3" rows="3" placeholder="Escreva a resposta fundamentada..."
+            class="custom-textarea w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+            oninput="atualizarRespostasImpressao('q_lid3')"></textarea>
+          <div id="q_lid3-print" class="textarea-print-fallback"></div>
+          <div class="word-counter no-print text-right text-xs text-slate-400 mt-1"><span id="q_lid3-count">0</span> palavras</div>
+        </div>
+      </div>
+
+      <div class="print-page-break"></div>
+
+      <!-- BLOCO B: QUESTÕES DE MOTIVAÇÃO -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 card-box space-y-5">
+        <div class="flex items-center gap-2 font-bold text-slate-900 text-base md:text-lg border-b border-slate-100 pb-3">
+          <span class="bg-indigo-600 text-white w-7 h-7 rounded-full inline-flex items-center justify-center text-sm">B</span>
+          <h3>Análise de Motivação no Ambiente Fabril</h3>
+        </div>
+
+        <!-- M1 -->
+        <div>
+          <label class="block text-xs md:text-sm font-bold text-slate-800 mb-2">
+            4. (Herzberg) Por que o bônus financeiro por produção não foi suficiente para motivar a equipe, e quais ações nos fatores motivacionais (conteúdo do trabalho, autonomia e reconhecimento técnico) vocês proporiam?
+          </label>
+          <textarea id="q_mot1" rows="3" placeholder="Escreva a resposta fundamentada..."
+            class="custom-textarea w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+            oninput="atualizarRespostasImpressao('q_mot1')"></textarea>
+          <div id="q_mot1-print" class="textarea-print-fallback"></div>
+          <div class="word-counter no-print text-right text-xs text-slate-400 mt-1"><span id="q_mot1-count">0</span> palavras</div>
+        </div>
+
+        <!-- M2 -->
+        <div>
+          <label class="block text-xs md:text-sm font-bold text-slate-800 mb-2">
+            5. (Ciclo Motivacional, Maslow e Clima) Em que momento o ciclo motivacional do operador que reportou a vibração foi bloqueado, como isso afetou o clima organizacional e qual deve ser o papel da engenharia para reverter esse quadro?
+          </label>
+          <textarea id="q_mot2" rows="3" placeholder="Escreva a resposta fundamentada..."
+            class="custom-textarea w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+            oninput="atualizarRespostasImpressao('q_mot2')"></textarea>
+          <div id="q_mot2-print" class="textarea-print-fallback"></div>
+          <div class="word-counter no-print text-right text-xs text-slate-400 mt-1"><span id="q_mot2-count">0</span> palavras</div>
+        </div>
+
+        <!-- M3 -->
+        <div>
+          <label class="block text-xs md:text-sm font-bold text-slate-800 mb-2">
+            6. (McClelland) Relacione os colaboradores A, B e C com as três necessidades de McClelland (Afiliação, Realização e Poder) e defina como aproveitar o perfil de cada um no Grupo de Melhoria Contínua (Kaizen / CCQ).
+          </label>
+          <textarea id="q_mot3" rows="3" placeholder="Escreva a resposta fundamentada..."
+            class="custom-textarea w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+            oninput="atualizarRespostasImpressao('q_mot3')"></textarea>
+          <div id="q_mot3-print" class="textarea-print-fallback"></div>
+          <div class="word-counter no-print text-right text-xs text-slate-400 mt-1"><span id="q_mot3-count">0</span> palavras</div>
+        </div>
+      </div>
+
+      <!-- Banner e Lembrete SIGAA -->
+      <div class="mt-8 bg-brand-50 border-2 border-brand-500 rounded-xl p-5 shadow-sm text-brand-900 sigaa-alert flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="bg-brand-600 text-white p-3 rounded-xl text-2xl hidden sm:block">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-base md:text-lg">Etapa Final — Envio do Trabalho no SIGAA</h4>
+            <p class="text-xs md:text-sm text-brand-800 mt-0.5">
+              <strong>Atenção:</strong> Após preencher todas as questões do Estudo de Caso, clique no botão para salvar o arquivo em <strong>PDF</strong> e anexe-o na tarefa do <strong>SIGAA</strong> dentro do prazo.
+            </p>
+          </div>
+        </div>
+
+        <button onclick="exportarPDF()" class="no-print whitespace-nowrap bg-brand-600 hover:bg-brand-700 text-white font-bold px-5 py-2.5 rounded-lg shadow-md transition flex items-center gap-2 text-sm">
+          <i class="fa-solid fa-file-pdf"></i> Gerar Relatório em PDF
+        </button>
+      </div>
+
+    </section>
+
+    <footer class="text-center text-xs text-slate-400 mt-8 mb-4 no-print">
+      Atividade Integrada — Graduação em Engenharia Mecânica (Liderança & Motivação)
+    </footer>
+
+  </main>
+
+  <script>
+    const camposIDs = [
+      'nomeEquipe',
+      'q_lid1', 'q_lid2', 'q_lid3',
+      'q_mot1', 'q_mot2', 'q_mot3'
+    ];
+
+    const gabarito = {
+      q1: 'b',
+      q2: 'b',
+      q3: 'c',
+      q4: 'a',
+      q5: 'b',
+      q6: 'd'
+    };
+
+    let parte1Concluida = false;
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const today = new Date();
+      document.getElementById('dataAtividade').value = today.toLocaleDateString('pt-BR');
+
+      carregarRascunhos();
+
+      if (localStorage.getItem('engmec_meiotermo_p1') === 'true') {
+        desbloquearParte2(false);
+      }
+
+      atualizarProgresso();
+    });
+
+    function atualizarRespostasImpressao(id) {
+      const inputElement = document.getElementById(id);
+      const printElement = document.getElementById(id + '-print');
+      const countElement = document.getElementById(id + '-count');
+
+      if (inputElement && printElement) {
+        const valor = inputElement.value.trim();
+        printElement.innerText = valor.length > 0 ? valor : "(Não respondido)";
+        localStorage.setItem('engmec_meiotermo_' + id, inputElement.value);
+
+        if (countElement) {
+          const palavras = valor ? valor.split(/\s+/).filter(w => w.length > 0).length : 0;
+          countElement.innerText = palavras;
+        }
+      }
+
+      atualizarProgresso();
+    }
+
+    function validarParte1() {
+      const nomeEquipe = document.getElementById('nomeEquipe').value.trim();
+      const msgErro = document.getElementById('mensagemErroP1');
+
+      if (!nomeEquipe) {
+        msgErro.innerHTML = "Por favor, informe o <strong>Nome da Equipe / Integrantes</strong> antes de prosseguir.";
+        msgErro.classList.remove('hidden');
+        document.getElementById('nomeEquipe').focus();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      let acertos = 0;
+      let erros = [];
+
+      for (let i = 1; i <= 6; i++) {
+        const box = document.getElementById('box-q' + i);
+        const selecionada = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selecionada && selecionada.value === gabarito['q' + i]) {
+          acertos++;
+          box.classList.remove('border-red-400', 'bg-red-50/40');
+          box.classList.add('border-emerald-400');
+        } else {
+          erros.push(i);
+          box.classList.remove('border-emerald-400');
+          box.classList.add('border-red-400', 'bg-red-50/40');
+        }
+      }
+
+      if (acertos === 6) {
+        msgErro.classList.add('hidden');
+        localStorage.setItem('engmec_meiotermo_p1', 'true');
+        desbloquearParte2(true);
+      } else {
+        msgErro.innerHTML = `Vocês acertaram <strong>${acertos} de 6</strong> questões. Para liberar o Estudo de Caso, revisem as questões destacadas: <strong>${erros.join(', ')}</strong>.`;
+        msgErro.classList.remove('hidden');
+        msgErro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function desbloquearParte2(rolarTopo) {
+      parte1Concluida = true;
+      document.getElementById('parte1').classList.add('hidden');
+      document.getElementById('parte2').classList.remove('hidden');
+      document.getElementById('btnTopPDF').classList.remove('hidden');
+
+      document.getElementById('tab1').className = "flex-1 py-3.5 px-4 text-emerald-700 bg-emerald-50 flex items-center justify-center gap-2";
+      document.getElementById('tab1').innerHTML = `<span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs">✓</span> Parte 1: Concluída`;
+
+      document.getElementById('tab2').className = "flex-1 py-3.5 px-4 bg-brand-50 text-brand-700 border-b-2 border-brand-600 flex items-center justify-center gap-2";
+      document.getElementById('tab2').innerHTML = `<span class="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs font-bold">2</span> Parte 2: Estudo de Caso Integrado`;
+
+      atualizarProgresso();
+      if (rolarTopo) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function voltarParte1() {
+      document.getElementById('parte2').classList.add('hidden');
+      document.getElementById('parte1').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function atualizarProgresso() {
+      let pontos = parte1Concluida ? 1 : 0;
+      const total = 1 + camposIDs.length;
+
+      camposIDs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value.trim().length > 5) {
+          pontos++;
+        }
+      });
+
+      const porcentagem = Math.round((pontos / total) * 100);
+      document.getElementById('progressBar').style.width = porcentagem + '%';
+    }
+
+    function exportarPDF() {
+      let tudoPreenchido = true;
+
+      camposIDs.forEach(id => {
+        atualizarRespostasImpressao(id);
+        const el = document.getElementById(id);
+        if (!el || !el.value.trim()) {
+          tudoPreenchido = false;
+          if (el) el.classList.add('border-red-500');
+        } else {
+          el.classList.remove('border-red-500');
+        }
+      });
+
+      if (!tudoPreenchido) {
+        alert("Por favor, preencha o nome da equipe e todas as respostas do Estudo de Caso antes de gerar o PDF.");
+        return;
+      }
+
+      window.print();
+    }
+
+    function carregarRascunhos() {
+      camposIDs.forEach(id => {
+        const salvo = localStorage.getItem('engmec_meiotermo_' + id);
+        const el = document.getElementById(id);
+        if (salvo && el) {
+          el.value = salvo;
+          atualizarRespostasImpressao(id);
+        }
+      });
+    }
+
+    function limparRespostas() {
+      if (confirm("Tem certeza que deseja reiniciar a atividade e limpar todas as respostas?")) {
+        localStorage.removeItem('engmec_meiotermo_p1');
+        camposIDs.forEach(id => {
+          localStorage.removeItem('engmec_meiotermo_' + id);
+        });
+        location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
